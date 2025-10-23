@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-header {
+            text-align: center;
+        }
+
+        .profile-header img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .profile-header h2 {
+            margin: 10px 0 5px;
+        }
+
+        .profile-header p {
+            color: #777;
+            margin: 0;
+        }
+
+        .profile-info {
+            margin-top: 20px;
+        }
+
+        .profile-info div {
+            margin-bottom: 10px;
+        }
+
+        .actions button {
+            padding: 10px 15px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .actions button.edit {
+            background: #007bff;
+            color: white;
+        }
+
+        .actions button.manage {
+            background: #28a745;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="profile-header">
+            <img src="https://via.placeholder.com/100" alt="Profile Picture" id="profile-pic">
+            <h2 id="name">John Doe</h2>
+            <p id="role">User</p>
+        </div>
+        <div class="profile-info">
+            <div><strong>Email:</strong> <span id="email">johndoe@example.com</span></div>
+            <div><strong>Joined:</strong> <span id="joined">2025-01-01</span></div>
+        </div>
+        <div class="actions" id="action-buttons">
+            <!-- Buttons will be inserted here based on role -->
+        </div>
+    </div>
+
+    <script>
+        // Example user data (this could come from your backend)
+        const user = {
+            name: "Alice Smith",
+            role: "Admin", // Can be "Super Admin", "Admin", or "User"
+            email: "alice@example.com",
+            joined: "2025-02-10",
+            profilePic: "https://via.placeholder.com/100"
+        };
+
+        // Populate profile info
+        document.getElementById("name").textContent = user.name;
+        document.getElementById("role").textContent = user.role;
+        document.getElementById("email").textContent = user.email;
+        document.getElementById("joined").textContent = user.joined;
+        document.getElementById("profile-pic").src = user.profilePic;
+
+        // Add buttons based on role
+        const actionDiv = document.getElementById("action-buttons");
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Edit Profile";
+        editBtn.classList.add("edit");
+        actionDiv.appendChild(editBtn);
+
+        if (user.role === "Admin" || user.role === "Super Admin") {
+            const manageBtn = document.createElement("button");
+            manageBtn.textContent = "Manage Users";
+            manageBtn.classList.add("manage");
+            actionDiv.appendChild(manageBtn);
+        }
+
+        if (user.role === "Super Admin") {
+            const superBtn = document.createElement("button");
+            superBtn.textContent = "Admin Settings";
+            superBtn.classList.add("manage");
+            actionDiv.appendChild(superBtn);
+        }
+    </script>
+</body>
+
+</html>

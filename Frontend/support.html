@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Support | Algocdk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff0f0',
+                            100: '#ffd6d6',
+                            500: '#ff4500',
+                            600: '#e63e00',
+                            700: '#cc3700',
+                        },
+                        dark: {
+                            900: '#000000',
+                            800: '#1a1a1a',
+                            700: '#333333',
+                            600: '#4d4d4d',
+                        },
+                        success: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff4500;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e63e00;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .content-section {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-dark-800 border-b border-dark-700">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-bold text-primary-500">
+                   Algocdk
+                </a>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/" class="text-gray-400 hover:text-white transition-colors">Dashboard</a>
+                    <a href="terms" class="text-gray-400 hover:text-white transition-colors">Terms</a>
+                    <a href="privacy" class="text-gray-400 hover:text-white transition-colors">Privacy</a>
+                    <a href="support" class="text-primary-500 font-medium">Support</a>
+                </nav>
+                <button class="md:hidden text-gray-400">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-primary-500 to-primary-600 text-white text-center py-16">
+        <div class="container mx-auto px-6">
+            <h1 class="text-4xl font-bold mb-4">Support Center</h1>
+            <p class="text-lg opacity-90 max-w-2xl mx-auto">We're here to help you with anything you need on Algocdk.
+                Our team is available 24/7 to assist you.</p>
+        </div>
+    </section>
+
+    <!-- Main Support Section -->
+    <main class="container mx-auto px-6 py-12 fade-in">
+        <div class="max-w-4xl mx-auto">
+            <!-- FAQ Section -->
+            <div class="mb-12">
+                <h2 class="text-2xl font-semibold mb-6 text-white">Frequently Asked Questions</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div
+                        class="bg-dark-800 rounded-xl border border-dark-700 p-6 hover:border-primary-500/30 transition-colors">
+                        <div class="flex items-start mb-3">
+                            <i class="fas fa-robot text-primary-500 mt-1 mr-3"></i>
+                            <h3 class="text-lg font-medium text-white">Bot Setup & Configuration</h3>
+                        </div>
+                        <p class="text-gray-400 text-sm">Learn how to set up and configure your trading bots for optimal
+                            performance.</p>
+                    </div>
+                    <div
+                        class="bg-dark-800 rounded-xl border border-dark-700 p-6 hover:border-primary-500/30 transition-colors">
+                        <div class="flex items-start mb-3">
+                            <i class="fas fa-exchange-alt text-primary-500 mt-1 mr-3"></i>
+                            <h3 class="text-lg font-medium text-white">API Integration</h3>
+                        </div>
+                        <p class="text-gray-400 text-sm">Troubleshoot API connection issues with Deriv and other
+                            platforms.</p>
+                    </div>
+                    <div
+                        class="bg-dark-800 rounded-xl border border-dark-700 p-6 hover:border-primary-500/30 transition-colors">
+                        <div class="flex items-start mb-3">
+                            <i class="fas fa-credit-card text-primary-500 mt-1 mr-3"></i>
+                            <h3 class="text-lg font-medium text-white">Billing & Payments</h3>
+                        </div>
+                        <p class="text-gray-400 text-sm">Questions about subscriptions, payments, and billing cycles.
+                        </p>
+                    </div>
+                    <div
+                        class="bg-dark-800 rounded-xl border border-dark-700 p-6 hover:border-primary-500/30 transition-colors">
+                        <div class="flex items-start mb-3">
+                            <i class="fas fa-shield-alt text-primary-500 mt-1 mr-3"></i>
+                            <h3 class="text-lg font-medium text-white">Account Security</h3>
+                        </div>
+                        <p class="text-gray-400 text-sm">Secure your account and troubleshoot login issues.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="mb-12">
+                <h2 class="text-2xl font-semibold mb-4 text-white">Get in Touch</h2>
+                <p class="mb-6 text-gray-400">
+                    Whether you're facing a technical issue, need help with your trading bot, or just have a question,
+                    our support team is available 24/7.
+                    Fill out the form below or use one of the contact methods to reach us.
+                </p>
+
+                <form class="bg-dark-800 rounded-xl border border-dark-700 p-6 space-y-6" action="#" method="POST">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Full Name</label>
+                            <input type="text" name="name" placeholder="John Doe"
+                                class="w-full p-3 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-2 text-gray-300">Email</label>
+                            <input type="email" name="email" placeholder="you@example.com"
+                                class="w-full p-3 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white transition-colors">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-gray-300">Issue Type</label>
+                        <select name="issue"
+                            class="w-full p-3 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white transition-colors">
+                            <option class="bg-dark-700">Technical Issue</option>
+                            <option class="bg-dark-700">Payment Inquiry</option>
+                            <option class="bg-dark-700">Bot Setup Help</option>
+                            <option class="bg-dark-700">Account Issue</option>
+                            <option class="bg-dark-700">Other</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2 text-gray-300">Message</label>
+                        <textarea name="message" rows="5" placeholder="Describe your issue..."
+                            class="w-full p-3 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white transition-colors"></textarea>
+                    </div>
+
+                    <button type="submit"
+                        class="w-full bg-primary-500 text-white py-3 rounded-lg font-semibold hover:bg-primary-600 transition-colors flex items-center justify-center">
+                        <i class="fas fa-paper-plane mr-2"></i> Submit Request
+                    </button>
+                </form>
+            </div>
+
+            <!-- Other Support Options -->
+            <div class="mb-12">
+                <h3 class="text-xl font-semibold mb-6 text-white">Other Ways to Reach Us</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <a href="mailto:support@Algocdk.com"
+                        class="bg-dark-800 rounded-xl border border-dark-700 p-6 hover:border-primary-500 transition-colors group text-center">
+                        <div
+                            class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-envelope text-primary-500 text-xl"></i>
+                        </div>
+                        <h4 class="font-medium text-white mb-2">Email Support</h4>
+                        <p class="text-gray-400 text-sm">support@Algocdk.com</p>
+                    </a>
+
+                    <a href="https://t.me/Algocdk_support" target="_blank"
+                        class="bg-dark-800 rounded-xl border border-dark-700 p-6 hover:border-primary-500 transition-colors group text-center">
+                        <div
+                            class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fab fa-telegram text-primary-500 text-xl"></i>
+                        </div>
+                        <h4 class="font-medium text-white mb-2">Telegram</h4>
+                        <p class="text-gray-400 text-sm">@Algocdk_support</p>
+                    </a>
+
+                    <a href="https://Algocdk.com" target="_blank"
+                        class="bg-dark-800 rounded-xl border border-dark-700 p-6 hover:border-primary-500 transition-colors group text-center">
+                        <div
+                            class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                            <i class="fas fa-globe text-primary-500 text-xl"></i>
+                        </div>
+                        <h4 class="font-medium text-white mb-2">Website</h4>
+                        <p class="text-gray-400 text-sm">www.Algocdk.com</p>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Response Time Info -->
+            <div class="bg-primary-500/10 rounded-xl border border-primary-500/20 p-6">
+                <div class="flex items-start">
+                    <i class="fas fa-clock text-primary-500 mt-1 mr-4 text-xl"></i>
+                    <div>
+                        <h3 class="text-lg font-medium text-white mb-2">Response Time</h3>
+                        <p class="text-gray-300">We typically respond to support requests within 2-4 hours during
+                            business hours. For urgent issues, please use our Telegram channel for faster assistance.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark-800 border-t border-dark-700 mt-16">
+        <div class="container mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-gray-400">&copy; <span id="year"></span> Algocdk by CDK Technologies. All rights
+                        reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="terms" class="text-gray-400 hover:text-white transition-colors">Terms & Conditions</a>
+                    <a href="privacy" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="support" class="text-primary-500 font-medium">Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Set current year in footer
+        document.getElementById("year").textContent = new Date().getFullYear();
+
+        // Simple fade-in animation for page load
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.classList.add('fade-in');
+        });
+    </script>
+</body>
+
+</html>

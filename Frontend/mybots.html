@@ -1,0 +1,945 @@
+
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bots | AlgoCDK - AI Trading Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff0f0',
+                            100: '#ffd6d6',
+                            500: '#ff4500',
+                            600: '#e63e00',
+                            700: '#cc3700',
+                        },
+                        dark: {
+                            900: '#000000',
+                            800: '#1a1a1a',
+                            700: '#333333',
+                            600: '#4d4d4d',
+                        },
+                        success: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff4500;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e63e00;
+        }
+
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .status-paused {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .status-expired {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .status-rental {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border-color: rgba(59, 130, 246, 0.3);
+        }
+
+        .bot-running {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 69, 0, 0.7);
+            }
+
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 69, 0, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 69, 0, 0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-white">
+    <!-- Top Navigation Bar -->
+    <nav class="bg-dark-800 border-b border-dark-700 py-3 px-6 flex justify-between items-center sticky top-0 z-10">
+        <div class="flex items-center">
+            <a href="#" class="text-xl font-bold text-white flex items-center">
+                <div class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                Algocdk
+            </a>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="hidden md:flex flex-1 max-w-md mx-4">
+            <div class="relative w-full">
+                <input type="text" placeholder="Search my bots..."
+                    class="w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <!-- Mobile Search Button -->
+            <button class="md:hidden text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-search"></i>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="hidden md:flex items-center space-x-4">
+                <a href="mybots" class="text-primary-500 font-medium">MyBots</a>
+                <a href="botstore" class="text-gray-300 hover:text-white transition-colors">Marketplace</a>
+                <a href="#" class="text-gray-300 hover:text-white transition-colors">Trade History</a>
+                <a href="support" class="text-gray-300 hover:text-white transition-colors">Support</a>
+            </div>
+
+            <!-- User Menu -->
+            <div class="relative">
+                <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
+                    <div
+                        class="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                        JD
+                    </div>
+                    <span class="hidden md:block">John Doe</span>
+                    <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                </button>
+
+                <!-- User Dropdown -->
+                <div id="userDropdown"
+                    class="absolute right-0 mt-2 w-48 bg-dark-800 rounded-lg shadow-lg border border-dark-700 hidden z-10">
+                    <div class="py-1">
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">Profile</a>
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">My
+                            Bots</a>
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">Settings</a>
+                        <div class="border-t border-dark-700 my-1"></div>
+                        <a href="#" class="block px-4 py-2 text-sm text-red-500 hover:bg-dark-700 transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-6 fade-in">
+        <!-- Header Section -->
+        <section class="mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-white mb-2">My Trading Bots</h1>
+                    <p class="text-gray-400">Manage and monitor your purchased and rented trading bots</p>
+                </div>
+                <a href="botstore"
+                    class="mt-4 md:mt-0 bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium flex items-center">
+                    <i class="fas fa-plus mr-2"></i> Get More Bots
+                </a>
+            </div>
+        </section>
+
+        <!-- Stats Section -->
+        <section class="mb-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-400 text-sm">Total Bots</p>
+                            <h3 class="text-2xl font-bold text-white mt-2">8</h3>
+                        </div>
+                        <div class="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                            <i class="fas fa-robot text-blue-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-green-500 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> 3 active</p>
+                </div>
+
+                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-400 text-sm">Total Spent</p>
+                            <h3 class="text-2xl font-bold text-white mt-2">$1,247</h3>
+                        </div>
+                        <div class="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                            <i class="fas fa-dollar-sign text-green-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-green-500 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> $245 this month</p>
+                </div>
+
+                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-400 text-sm">Monthly Cost</p>
+                            <h3 class="text-2xl font-bold text-white mt-2">$129</h3>
+                        </div>
+                        <div class="p-3 bg-yellow-500/10 rounded-lg border border-yellow-500/20">
+                            <i class="fas fa-calendar-alt text-yellow-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-green-500 text-sm mt-4"><i class="fas fa-arrow-down mr-1"></i> $20 from last month
+                    </p>
+                </div>
+
+                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-400 text-sm">Avg. Performance</p>
+                            <h3 class="text-2xl font-bold text-white mt-2">+9.8%</h3>
+                        </div>
+                        <div class="p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                            <i class="fas fa-chart-line text-purple-500"></i>
+                        </div>
+                    </div>
+                    <p class="text-green-500 text-sm mt-4"><i class="fas fa-arrow-up mr-1"></i> 2.1% from last week</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters Section -->
+        <section class="mb-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div class="flex flex-wrap gap-3 mb-4 md:mb-0">
+                    <button
+                        class="filter-btn bg-primary-500/20 text-primary-500 px-4 py-2 rounded-lg border border-primary-500/30 font-medium"
+                        data-filter="all">
+                        All Bots
+                    </button>
+                    <button
+                        class="filter-btn bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
+                        data-filter="active">
+                        Active
+                    </button>
+                    <button
+                        class="filter-btn bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
+                        data-filter="paused">
+                        Paused
+                    </button>
+                    <button
+                        class="filter-btn bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
+                        data-filter="rental">
+                        Rental
+                    </button>
+                    <button
+                        class="filter-btn bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
+                        data-filter="purchased">
+                        Purchased
+                    </button>
+                </div>
+
+                <div class="flex space-x-4">
+                    <div class="relative">
+                        <select id="sortSelect"
+                            class="bg-dark-800 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white appearance-none pr-8">
+                            <option value="recent">Recently Added</option>
+                            <option value="name">Name A-Z</option>
+                            <option value="performance">Best Performance</option>
+                            <option value="cost">Monthly Cost</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bots Grid Section -->
+        <section>
+            <div id="loadingIndicator" class="flex justify-center items-center py-12">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+                <span class="ml-3 text-gray-400">Loading your bots...</span>
+            </div>
+
+            <div id="botsGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Bot cards will be populated here by JavaScript -->
+            </div>
+
+            <div id="noBots" class="hidden text-center py-12">
+                <i class="fas fa-robot text-5xl text-gray-600 mb-4"></i>
+                <h3 class="text-xl font-medium text-white mb-2">You don't have any bots yet</h3>
+                <p class="text-gray-400 mb-6">Start building your trading portfolio by exploring our marketplace</p>
+                <a href="botstore"
+                    class="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors font-medium">
+                    Browse Marketplace
+                </a>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark-800 border-t border-dark-700 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center mb-2">
+                        <div class="w-6 h-6 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
+                            <i class="fas fa-robot text-white text-xs"></i>
+                        </div>
+                        <span class="text-lg font-bold text-white">AlgoCDK</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">&copy; 2023 AlgoCDK. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="terms" class="text-gray-400 hover:text-white transition-colors text-sm">Terms</a>
+                    <a href="privacy" class="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
+                    <a href="support" class="text-gray-400 hover:text-white transition-colors text-sm">Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Loading Spinner Template (Hidden by default) -->
+    <div id="loadingSpinner" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+        <div class="bg-dark-800 rounded-xl p-6 flex flex-col items-center border border-dark-600">
+            <div class="w-16 h-16 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-4">
+            </div>
+            <p class="text-white">Starting your trading bot...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Dummy data for user's bots - in a real app, this would come from an API
+        const userBotsData = [
+            {
+                id: 1,
+                name: "AI RiseFall Pro",
+                creator: "AlgoCDK Team",
+                category: "risefall",
+                rating: 4.8,
+                performance: "+12.4%",
+                status: "active",
+                purchaseType: "purchased",
+                purchaseDate: "2023-09-15",
+                expirationDate: null,
+                monthlyCost: 0,
+                totalCost: 299.99,
+                description: "Advanced AI that predicts rise/fall movements with high accuracy using machine learning.",
+                isRunning: true,
+                configuration: {
+                    riskLevel: "medium",
+                    tradeAmount: 10,
+                    maxTrades: 5
+                }
+            },
+            {
+                id: 2,
+                name: "Volatility Hunter",
+                creator: "MarketWizards",
+                category: "digit",
+                rating: 4.6,
+                performance: "+15.2%",
+                status: "active",
+                purchaseType: "rental",
+                purchaseDate: "2023-10-05",
+                expirationDate: "2023-11-05",
+                monthlyCost: 24.99,
+                totalCost: 24.99,
+                description: "Capitalizes on market volatility with adaptive risk management and dynamic position sizing.",
+                isRunning: false,
+                configuration: {
+                    riskLevel: "high",
+                    tradeAmount: 15,
+                    maxTrades: 3
+                }
+            },
+            {
+                id: 3,
+                name: "Trend Follower",
+                creator: "CryptoGuru",
+                category: "risefall",
+                rating: 4.5,
+                performance: "+10.3%",
+                status: "paused",
+                purchaseType: "purchased",
+                purchaseDate: "2023-08-20",
+                expirationDate: null,
+                monthlyCost: 0,
+                totalCost: 199.99,
+                description: "Identifies and rides market trends with precision entry points and trailing stop losses.",
+                isRunning: false,
+                configuration: {
+                    riskLevel: "low",
+                    tradeAmount: 8,
+                    maxTrades: 10
+                }
+            },
+            {
+                id: 4,
+                name: "Momentum Trader",
+                creator: "QuantPro",
+                category: "evenodd",
+                rating: 4.7,
+                performance: "+13.6%",
+                status: "active",
+                purchaseType: "rental",
+                purchaseDate: "2023-09-28",
+                expirationDate: "2023-10-28",
+                monthlyCost: 34.99,
+                totalCost: 34.99,
+                description: "Captures short-term momentum with rapid execution and optimized risk-reward ratios.",
+                isRunning: true,
+                configuration: {
+                    riskLevel: "medium",
+                    tradeAmount: 12,
+                    maxTrades: 8
+                }
+            },
+            {
+                id: 5,
+                name: "Scalper Pro",
+                creator: "FastTrades",
+                category: "digit",
+                rating: 4.3,
+                performance: "+8.7%",
+                status: "expired",
+                purchaseType: "rental",
+                purchaseDate: "2023-08-10",
+                expirationDate: "2023-09-10",
+                monthlyCost: 14.99,
+                totalCost: 14.99,
+                description: "High-frequency scalping strategy with micro positions and rapid profit-taking.",
+                isRunning: false,
+                configuration: {
+                    riskLevel: "high",
+                    tradeAmount: 5,
+                    maxTrades: 20
+                }
+            },
+            {
+                id: 6,
+                name: "Arbitrage Master",
+                creator: "ProfitSeeker",
+                category: "premium",
+                rating: 4.9,
+                performance: "+7.9%",
+                status: "active",
+                purchaseType: "purchased",
+                purchaseDate: "2023-07-15",
+                expirationDate: null,
+                monthlyCost: 0,
+                totalCost: 499.99,
+                description: "Exploits price differences across multiple exchanges with lightning-fast execution.",
+                isRunning: false,
+                configuration: {
+                    riskLevel: "low",
+                    tradeAmount: 20,
+                    maxTrades: 2
+                }
+            },
+            {
+                id: 7,
+                name: "Pattern Recognizer",
+                creator: "AI Traders",
+                category: "community",
+                rating: 4.4,
+                performance: "+9.5%",
+                status: "paused",
+                purchaseType: "rental",
+                purchaseDate: "2023-10-01",
+                expirationDate: "2023-11-01",
+                monthlyCost: 22.99,
+                totalCost: 22.99,
+                description: "Uses deep learning to identify profitable chart patterns in real-time.",
+                isRunning: false,
+                configuration: {
+                    riskLevel: "medium",
+                    tradeAmount: 10,
+                    maxTrades: 5
+                }
+            },
+            {
+                id: 8,
+                name: "Quantum Predictor",
+                creator: "FutureTech",
+                category: "premium",
+                rating: 4.8,
+                performance: "+14.8%",
+                status: "active",
+                purchaseType: "purchased",
+                purchaseDate: "2023-09-05",
+                expirationDate: null,
+                monthlyCost: 0,
+                totalCost: 599.99,
+                description: "Advanced quantum-inspired algorithm for predicting market movements with high precision.",
+                isRunning: true,
+                configuration: {
+                    riskLevel: "high",
+                    tradeAmount: 25,
+                    maxTrades: 3
+                }
+            }
+        ];
+
+        // DOM Elements
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const botsGrid = document.getElementById('botsGrid');
+        const noBots = document.getElementById('noBots');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const sortSelect = document.getElementById('sortSelect');
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userDropdown = document.getElementById('userDropdown');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set up event listeners
+            setupEventListeners();
+
+            // Load bots with a slight delay to simulate API call
+            setTimeout(() => {
+                loadBots(userBotsData);
+            }, 1000);
+        });
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Filter buttons
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    // Update active button
+                    filterButtons.forEach(btn => {
+                        btn.classList.remove('bg-primary-500/20', 'text-primary-500', 'border-primary-500/30');
+                        btn.classList.add('bg-dark-700', 'text-gray-300', 'border-dark-600');
+                    });
+                    this.classList.remove('bg-dark-700', 'text-gray-300', 'border-dark-600');
+                    this.classList.add('bg-primary-500/20', 'text-primary-500', 'border-primary-500/30');
+
+                    // Filter bots
+                    const filter = this.getAttribute('data-filter');
+                    filterBots(filter);
+                });
+            });
+
+            // Sort dropdown
+            sortSelect.addEventListener('change', function () {
+                sortBots(this.value);
+            });
+
+            // User dropdown
+            userMenuButton.addEventListener('click', function () {
+                userDropdown.classList.toggle('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (event) {
+                if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                    userDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Load bots into the grid
+        function loadBots(bots) {
+            loadingIndicator.classList.add('hidden');
+
+            if (bots.length === 0) {
+                noBots.classList.remove('hidden');
+                botsGrid.classList.add('hidden');
+                return;
+            }
+
+            botsGrid.classList.remove('hidden');
+            noBots.classList.add('hidden');
+
+            botsGrid.innerHTML = '';
+
+            bots.forEach(bot => {
+                const botCard = createBotCard(bot);
+                botsGrid.appendChild(botCard);
+            });
+        }
+
+        // Create a bot card element
+        function createBotCard(bot) {
+            const card = document.createElement('div');
+            card.className = 'bg-dark-800 rounded-xl border border-dark-700 overflow-hidden card-hover fade-in';
+            card.setAttribute('data-status', bot.status);
+            card.setAttribute('data-purchase-type', bot.purchaseType);
+
+            // Generate status badge
+            const statusBadge = getStatusBadge(bot.status, bot.purchaseType);
+
+            // Generate purchase type badge
+            const purchaseTypeBadge = bot.purchaseType === 'rental'
+                ? `<span class="status-rental text-xs font-medium px-2 py-1 rounded border">Rental</span>`
+                : `<span class="bg-purple-500/20 text-purple-500 text-xs font-medium px-2 py-1 rounded border border-purple-500/30">Owned</span>`;
+
+            // Generate action buttons based on status
+            const actionButtons = getActionButtons(bot);
+
+            card.innerHTML = `
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">${bot.name}</h3>
+                            <p class="text-gray-400 text-sm">by ${bot.creator}</p>
+                        </div>
+                        <div class="flex flex-col items-end space-y-2">
+                            ${statusBadge}
+                            ${purchaseTypeBadge}
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400 mr-2">
+                            ${generateStarRating(bot.rating)}
+                        </div>
+                        <span class="text-gray-400 text-sm">${bot.rating}</span>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm mb-6">${bot.description}</p>
+                    
+                    <!-- Performance and Cost -->
+                    <div class="grid grid-cols-2 gap-4 mb-6">
+                        <div class="bg-dark-700 rounded-lg p-3 border border-dark-600">
+                            <p class="text-gray-400 text-xs">Performance</p>
+                            <p class="text-white font-medium">${bot.performance}</p>
+                        </div>
+                        <div class="bg-dark-700 rounded-lg p-3 border border-dark-600">
+                            <p class="text-gray-400 text-xs">${bot.purchaseType === 'rental' ? 'Monthly Cost' : 'Total Cost'}</p>
+                            <p class="text-white font-medium">$${bot.purchaseType === 'rental' ? bot.monthlyCost : bot.totalCost}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Purchase Info -->
+                    <div class="text-xs text-gray-400 mb-6">
+                        <div class="flex justify-between">
+                            <span>Purchased:</span>
+                            <span>${formatDate(bot.purchaseDate)}</span>
+                        </div>
+                        ${bot.expirationDate ? `
+                        <div class="flex justify-between mt-1">
+                            <span>Expires:</span>
+                            <span>${formatDate(bot.expirationDate)}</span>
+                        </div>
+                        ` : ''}
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="flex space-x-2">
+                        ${actionButtons}
+                    </div>
+                </div>
+            `;
+
+            // Add event listeners to action buttons
+            const runBtn = card.querySelector('.run-bot-btn');
+            if (runBtn) {
+                runBtn.addEventListener('click', function () {
+                    toggleBotRunning(bot.id);
+                });
+            }
+
+            const configureBtn = card.querySelector('.configure-bot-btn');
+            if (configureBtn) {
+                configureBtn.addEventListener('click', function () {
+                    configureBot(bot.id);
+                });
+            }
+
+            const renewBtn = card.querySelector('.renew-bot-btn');
+            if (renewBtn) {
+                renewBtn.addEventListener('click', function () {
+                    renewBot(bot.id);
+                });
+            }
+
+            return card;
+        }
+
+        // Generate status badge HTML
+        function getStatusBadge(status, purchaseType) {
+            let badgeClass = '';
+            let badgeText = '';
+
+            switch (status) {
+                case 'active':
+                    badgeClass = 'status-active';
+                    badgeText = 'Active';
+                    break;
+                case 'paused':
+                    badgeClass = 'status-paused';
+                    badgeText = 'Paused';
+                    break;
+                case 'expired':
+                    badgeClass = 'status-expired';
+                    badgeText = 'Expired';
+                    break;
+                default:
+                    badgeClass = 'status-paused';
+                    badgeText = status;
+            }
+
+            return `<span class="${badgeClass} text-xs font-medium px-2 py-1 rounded border">${badgeText}</span>`;
+        }
+
+        // Generate action buttons based on bot status
+        function getActionButtons(bot) {
+            let buttons = '';
+
+            if (bot.status === 'active') {
+                if (bot.isRunning) {
+                    buttons += `
+                        <button class="run-bot-btn bg-red-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-600 transition-colors flex-1 flex items-center justify-center bot-running">
+                            <i class="fas fa-stop mr-2"></i> Stop
+                        </button>
+                    `;
+                } else {
+                    buttons += `
+                        <button class="run-bot-btn bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors flex-1 flex items-center justify-center">
+                            <i class="fas fa-play mr-2"></i> Run
+                        </button>
+                    `;
+                }
+
+                buttons += `
+                    <button class="configure-bot-btn bg-dark-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-dark-600 transition-colors border border-dark-600">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                `;
+            } else if (bot.status === 'paused') {
+                buttons += `
+                    <button class="run-bot-btn bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors flex-1 flex items-center justify-center">
+                        <i class="fas fa-play mr-2"></i> Resume
+                    </button>
+                    <button class="configure-bot-btn bg-dark-700 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-dark-600 transition-colors border border-dark-600">
+                        <i class="fas fa-cog"></i>
+                    </button>
+                `;
+            } else if (bot.status === 'expired' && bot.purchaseType === 'rental') {
+                buttons += `
+                    <button class="renew-bot-btn bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors flex-1 flex items-center justify-center">
+                        <i class="fas fa-sync-alt mr-2"></i> Renew
+                    </button>
+                `;
+            }
+
+            return buttons;
+        }
+
+        // Generate star rating HTML
+        function generateStarRating(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+
+            for (let i = 0; i < 5; i++) {
+                if (i < fullStars) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i === fullStars && hasHalfStar) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+
+            return stars;
+        }
+
+        // Format date for display
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Filter bots by status or purchase type
+        function filterBots(filter) {
+            if (filter === 'all') {
+                loadBots(userBotsData);
+            } else {
+                const filteredBots = userBotsData.filter(bot => {
+                    if (filter === 'rental' || filter === 'purchased') {
+                        return bot.purchaseType === filter;
+                    } else {
+                        return bot.status === filter;
+                    }
+                });
+                loadBots(filteredBots);
+            }
+        }
+
+        // Sort bots by selected criteria
+        function sortBots(criteria) {
+            let sortedBots = [...userBotsData];
+
+            switch (criteria) {
+                case 'recent':
+                    sortedBots.sort((a, b) => new Date(b.purchaseDate) - new Date(a.purchaseDate));
+                    break;
+                case 'name':
+                    sortedBots.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'performance':
+                    sortedBots.sort((a, b) => {
+                        const aPerf = parseFloat(a.performance);
+                        const bPerf = parseFloat(b.performance);
+                        return bPerf - aPerf;
+                    });
+                    break;
+                case 'cost':
+                    sortedBots.sort((a, b) => {
+                        const aCost = a.purchaseType === 'rental' ? a.monthlyCost : a.totalCost;
+                        const bCost = b.purchaseType === 'rental' ? b.monthlyCost : b.totalCost;
+                        return bCost - aCost;
+                    });
+                    break;
+            }
+
+            loadBots(sortedBots);
+        }
+
+        // Toggle bot running state
+        function toggleBotRunning(botId) {
+            const botIndex = userBotsData.findIndex(bot => bot.id === botId);
+            if (botIndex !== -1) {
+                const bot = userBotsData[botIndex];
+
+                // Show loading spinner
+                loadingSpinner.classList.remove('hidden');
+
+                // Simulate API call
+                setTimeout(() => {
+                    // Update bot running state
+                    userBotsData[botIndex].isRunning = !userBotsData[botIndex].isRunning;
+
+                    // Reload bots to reflect changes
+                    loadBots(userBotsData);
+
+                    // Hide loading spinner
+                    loadingSpinner.classList.add('hidden');
+
+                    // Show success message
+                    showToast(`${bot.name} ${bot.isRunning ? 'started' : 'stopped'} successfully!`);
+                }, 1500);
+            }
+        }
+
+        // Configure bot
+        function configureBot(botId) {
+            const botIndex = userBotsData.findIndex(bot => bot.id === botId);
+            if (botIndex !== -1) {
+                const bot = userBotsData[botIndex];
+                alert(`Opening configuration for ${bot.name}`);
+                // In a real app, this would open a configuration modal or page
+            }
+        }
+
+        // Renew bot
+        function renewBot(botId) {
+            const botIndex = userBotsData.findIndex(bot => bot.id === botId);
+            if (botIndex !== -1) {
+                const bot = userBotsData[botIndex];
+                alert(`Initiating renewal for ${bot.name} at $${bot.monthlyCost}/month`);
+                // In a real app, this would open a payment modal
+            }
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            // Create toast element if it doesn't exist
+            let toast = document.getElementById('toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.className = 'fixed top-4 right-4 bg-success-500 text-white px-6 py-3 rounded-lg shadow-lg z-30 border border-success-500/30 hidden';
+                document.body.appendChild(toast);
+            }
+
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            toast.classList.remove('hidden');
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>
+
+

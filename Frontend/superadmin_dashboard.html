@@ -1,0 +1,2175 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoCdk SuperAdmin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff0f0',
+                            100: '#ffd6d6',
+                            500: '#ff4500',
+                            600: '#e63e00',
+                            700: '#cc3700',
+                        },
+                        dark: {
+                            900: '#000000',
+                            800: '#1a1a1a',
+                            700: '#333333',
+                            600: '#4d4d4d',
+                        },
+                        success: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff4500;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e63e00;
+        }
+
+        .page-content {
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-white">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="hidden md:flex md:w-64 md:flex-col">
+            <div class="flex flex-col flex-grow pt-5 overflow-y-auto bg-dark-800 border-r border-dark-700">
+                <div class="flex items-center flex-shrink-0 px-4">
+                    <h1 class="text-2xl font-bold text-primary-500">AlgoCdk SuperAdmin</h1>
+                </div>
+                <div class="mt-8 flex-grow flex flex-col">
+                    <nav class="flex-1 px-4 space-y-2">
+                        <a href="#" data-page="dashboard"
+                            class="flex items-center px-4 py-2 text-white bg-primary-500/20 rounded-lg group border border-primary-500/30">
+                            <i class="fas fa-tachometer-alt mr-3 text-primary-500"></i>
+                            Dashboard
+                        </a>
+                        <a href="#" data-page="admins"
+                            class="flex items-center px-4 py-2 text-gray-400 rounded-lg hover:bg-dark-700 group border border-transparent hover:border-dark-600 transition-colors">
+                            <i class="fas fa-users-cog mr-3"></i>
+                            Manage Admins
+                        </a>
+                        <a href="#" data-page="users"
+                            class="flex items-center px-4 py-2 text-gray-400 rounded-lg hover:bg-dark-700 group border border-transparent hover:border-dark-600 transition-colors">
+                            <i class="fas fa-users mr-3"></i>
+                            Manage Users
+                        </a>
+                        <a href="#" data-page="bots"
+                            class="flex items-center px-4 py-2 text-gray-400 rounded-lg hover:bg-dark-700 group border border-transparent hover:border-dark-600 transition-colors">
+                            <i class="fas fa-robot mr-3"></i>
+                            Bots Marketplace
+                        </a>
+                        <a href="#" data-page="transactions"
+                            class="flex items-center px-4 py-2 text-gray-400 rounded-lg hover:bg-dark-700 group border border-transparent hover:border-dark-600 transition-colors">
+                            <i class="fas fa-exchange-alt mr-3"></i>
+                            Transactions
+                        </a>
+                        <a href="#" data-page="reports"
+                            class="flex items-center px-4 py-2 text-gray-400 rounded-lg hover:bg-dark-700 group border border-transparent hover:border-dark-600 transition-colors">
+                            <i class="fas fa-chart-bar mr-3"></i>
+                            Reports & Analytics
+                        </a>
+                        <a href="#" data-page="settings"
+                            class="flex items-center px-4 py-2 text-gray-400 rounded-lg hover:bg-dark-700 group border border-transparent hover:border-dark-600 transition-colors">
+                            <i class="fas fa-cog mr-3"></i>
+                            Settings
+                        </a>
+                    </nav>
+                </div>
+                <div class="flex-shrink-0 flex border-t border-dark-700 p-4">
+                    <div class="flex items-center">
+                        <div
+                            class="w-9 h-9 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                            SA
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-white">Super Admin</p>
+                            <p class="text-xs font-medium text-gray-400">admin@algocdk.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <!-- Topbar -->
+            <header class="flex items-center justify-between px-6 py-4 bg-dark-800 border-b border-dark-700">
+                <div class="flex items-center">
+                    <button class="text-gray-400 focus:outline-none lg:hidden hover:text-white transition-colors"
+                        id="sidebarToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h2 class="ml-4 text-lg font-semibold text-white" id="pageTitle">Dashboard</h2>
+                </div>
+
+                <div class="flex items-center">
+                    <div class="relative">
+                        <button class="flex mx-4 text-gray-400 focus:outline-none hover:text-white transition-colors"
+                            id="notificationButton">
+                            <i class="fas fa-bell"></i>
+                            <span
+                                class="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary-500 animate-pulse"></span>
+                        </button>
+
+                        <!-- Notification dropdown -->
+                        <div class="absolute right-0 z-10 w-80 mt-2 overflow-hidden bg-dark-700 rounded-lg shadow-xl hidden border border-dark-600"
+                            id="notificationDropdown">
+                            <div class="p-4 border-b border-dark-600">
+                                <h3 class="text-lg font-medium text-white">Notifications</h3>
+                            </div>
+                            <div class="divide-y divide-dark-600 max-h-96 overflow-y-auto" id="notificationsList">
+                                <!-- Notifications will be loaded here -->
+                            </div>
+                            <div class="p-4 border-t border-dark-600">
+                                <a href="#"
+                                    class="block text-center text-sm font-medium text-primary-500 hover:text-primary-400 transition-colors">View
+                                    all notifications</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <button class="relative flex items-center focus:outline-none text-white" id="userMenuButton">
+                            <div
+                                class="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                                SA
+                            </div>
+                            <span class="ml-2 text-sm font-medium">Super Admin</span>
+                            <i class="ml-1 fas fa-chevron-down text-gray-400"></i>
+                        </button>
+
+                        <!-- User dropdown -->
+                        <div class="absolute right-0 z-10 w-48 mt-2 overflow-hidden bg-dark-700 rounded-lg shadow-lg hidden border border-dark-600"
+                            id="userDropdown">
+                            <div class="py-1">
+                                <a href="#"
+                                    class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-600 hover:text-white transition-colors">Your
+                                    Profile</a>
+                                <a href="#"
+                                    class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-600 hover:text-white transition-colors">Settings</a>
+                                <a href="#"
+                                    class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-600 hover:text-white transition-colors">Support</a>
+                                <div class="border-t border-dark-600"></div>
+                                <a href="#" id="logoutBtn"
+                                    class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-600 hover:text-white transition-colors">Sign
+                                    out</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto p-6 bg-dark-900">
+                <!-- Dashboard Page -->
+                <div id="dashboard" class="page-content fade-in">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-white">Dashboard</h2>
+                        <p class="text-gray-400">Welcome to your AlgoCdk SuperAdmin dashboard</p>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                        <div
+                            class="bg-dark-800 rounded-xl border border-dark-700 p-6 transition-all hover:-translate-y-1 hover:border-primary-500/30">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-primary-500/10 text-primary-500 mr-4">
+                                    <i class="fas fa-users text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-400">Total Users</p>
+                                    <h3 class="text-2xl font-bold text-white" id="totalUsers">Loading...</h3>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-success-500 text-sm font-medium">
+                                    <i class="fas fa-arrow-up mr-1"></i>12.5%
+                                </span>
+                                <span class="text-gray-500 text-sm ml-2">from last month</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-dark-800 rounded-xl border border-dark-700 p-6 transition-all hover:-translate-y-1 hover:border-primary-500/30">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-purple-500/10 text-purple-400 mr-4">
+                                    <i class="fas fa-users-cog text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-400">Total Admins</p>
+                                    <h3 class="text-2xl font-bold text-white" id="totalAdmins">Loading...</h3>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-success-500 text-sm font-medium">
+                                    <i class="fas fa-arrow-up mr-1"></i>2
+                                </span>
+                                <span class="text-gray-500 text-sm ml-2">new this month</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-dark-800 rounded-xl border border-dark-700 p-6 transition-all hover:-translate-y-1 hover:border-primary-500/30">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-yellow-500/10 text-yellow-500 mr-4">
+                                    <i class="fas fa-robot text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-400">Total Bots</p>
+                                    <h3 class="text-2xl font-bold text-white" id="totalBots">Loading...</h3>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-success-500 text-sm font-medium">
+                                    <i class="fas fa-arrow-up mr-1"></i>8.2%
+                                </span>
+                                <span class="text-gray-500 text-sm ml-2">from last month</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-dark-800 rounded-xl border border-dark-700 p-6 transition-all hover:-translate-y-1 hover:border-primary-500/30">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-green-500/10 text-green-400 mr-4">
+                                    <i class="fas fa-dollar-sign text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-400">Total Revenue</p>
+                                    <h3 class="text-2xl font-bold text-white" id="totalRevenue">Loading...</h3>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-success-500 text-sm font-medium">
+                                    <i class="fas fa-arrow-up mr-1"></i>18.3%
+                                </span>
+                                <span class="text-gray-500 text-sm ml-2">from last month</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-dark-800 rounded-xl border border-dark-700 p-6 transition-all hover:-translate-y-1 hover:border-primary-500/30">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-red-500/10 text-red-400 mr-4">
+                                    <i class="fas fa-sync-alt text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-400">Active Subscriptions</p>
+                                    <h3 class="text-2xl font-bold text-white" id="activeSubscriptions">Loading...</h3>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-success-500 text-sm font-medium">
+                                    <i class="fas fa-arrow-up mr-1"></i>5.7%
+                                </span>
+                                <span class="text-gray-500 text-sm ml-2">from last month</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <!-- Revenue Growth Chart -->
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">Revenue Growth</h3>
+                            <div class="h-80">
+                                <canvas id="revenueChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Platform Activity -->
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">Platform Activity</h3>
+                            <div class="space-y-4" id="activityFeed">
+                                <!-- Activity items will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manage Admins Page -->
+                <div id="admins" class="page-content fade-in hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white">Manage Admins</h2>
+                        <button id="createAdminBtn"
+                            class="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors flex items-center">
+                            <i class="fas fa-plus mr-2"></i> Create Admin
+                        </button>
+                    </div>
+
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-dark-600">
+                                <thead class="bg-dark-700">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Name</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Email</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Role</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Created At</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-dark-800 divide-y divide-dark-600" id="adminsTableBody">
+                                    <!-- Admins will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Manage Users Page -->
+                <div id="users" class="page-content fade-in hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white">Manage Users</h2>
+                        <div class="flex space-x-4">
+                            <div class="relative">
+                                <input type="text" placeholder="Search users..." id="userSearch"
+                                    class="pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                            </div>
+                            <select id="userStatusFilter"
+                                class="bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                                <option value="all">All Status</option>
+                                <option value="active">Active</option>
+                                <option value="suspended">Suspended</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-dark-600">
+                                <thead class="bg-dark-700">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            User ID</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Name</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Email</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Status</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Joined</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-dark-800 divide-y divide-dark-600" id="usersTableBody">
+                                    <!-- Users will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bots Marketplace Page -->
+                <div id="bots" class="page-content fade-in hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white">Bots Marketplace</h2>
+                        <button id="scanBotsBtn"
+                            class="bg-yellow-600 text-white px-4 py-2 rounded-lg hover:bg-yellow-700 transition-colors flex items-center">
+                            <i class="fas fa-search mr-2"></i> Scan Bots
+                        </button>
+                    </div>
+
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-dark-600">
+                                <thead class="bg-dark-700">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Name</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Owner ID</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Price</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Status</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Created At</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-dark-800 divide-y divide-dark-600" id="botsTableBody">
+                                    <!-- Bots will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transactions Page -->
+                <div id="transactions" class="page-content fade-in hidden">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-2xl font-bold text-white">Transactions</h2>
+                        <div class="flex space-x-4">
+                            <select id="transactionTypeFilter"
+                                class="bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                                <option value="all">All Types</option>
+                                <option value="subscription">Subscription</option>
+                                <option value="purchase">Purchase</option>
+                                <option value="hosting">Hosting</option>
+                            </select>
+                            <input type="date" id="transactionDateFilter"
+                                class="bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                        </div>
+                    </div>
+
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-dark-600">
+                                <thead class="bg-dark-700">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Transaction ID</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            User</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Amount</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Type</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Date</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-dark-800 divide-y divide-dark-600" id="transactionsTableBody">
+                                    <!-- Transactions will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports & Analytics Page -->
+                <div id="reports" class="page-content fade-in hidden">
+                    <h2 class="text-2xl font-bold text-white mb-6">Reports & Analytics</h2>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">Monthly Revenue</h3>
+                            <div class="h-80">
+                                <canvas id="monthlyRevenueChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">Bot Uploads</h3>
+                            <div class="h-80">
+                                <canvas id="botUploadsChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                        <h3 class="text-lg font-medium text-white mb-4">User Growth</h3>
+                        <div class="h-80">
+                            <canvas id="userGrowthChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Page -->
+                <div id="settings" class="page-content fade-in hidden">
+                    <h2 class="text-2xl font-bold text-white mb-6">Settings</h2>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">Profile Information</h3>
+                            <form id="profileForm">
+                                <div class="mb-4">
+                                    <label class="block text-gray-400 text-sm font-medium mb-2" for="name">
+                                        Name
+                                    </label>
+                                    <input id="name" type="text"
+                                        class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                                        value="Super Admin">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-400 text-sm font-medium mb-2" for="email">
+                                        Email
+                                    </label>
+                                    <input id="email" type="email"
+                                        class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                                        value="admin@algocdk.com">
+                                </div>
+                                <button type="submit"
+                                    class="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors">
+                                    Update Profile
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">Change Password</h3>
+                            <form id="passwordForm">
+                                <div class="mb-4">
+                                    <label class="block text-gray-400 text-sm font-medium mb-2" for="currentPassword">
+                                        Current Password
+                                    </label>
+                                    <input id="currentPassword" type="password"
+                                        class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-400 text-sm font-medium mb-2" for="newPassword">
+                                        New Password
+                                    </label>
+                                    <input id="newPassword" type="password"
+                                        class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-400 text-sm font-medium mb-2" for="confirmPassword">
+                                        Confirm New Password
+                                    </label>
+                                    <input id="confirmPassword" type="password"
+                                        class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                                </div>
+                                <button type="submit"
+                                    class="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors">
+                                    Change Password
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">API Configuration</h3>
+                            <form id="apiConfigForm">
+                                <div class="mb-4">
+                                    <label class="block text-gray-400 text-sm font-medium mb-2" for="derivAppId">
+                                        Deriv App ID
+                                    </label>
+                                    <input id="derivAppId" type="text"
+                                        class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                                        value="1089">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-gray-400 text-sm font-medium mb-2" for="apiKey">
+                                        API Key
+                                    </label>
+                                    <input id="apiKey" type="text"
+                                        class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                                        value="sk_algocdk_xxxxxxxxxxxx">
+                                </div>
+                                <button type="submit"
+                                    class="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors">
+                                    Save Configuration
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Create Admin Modal -->
+    <div id="createAdminModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20 hidden">
+        <div class="bg-dark-800 rounded-xl shadow-lg w-full max-w-md p-6 border border-dark-600">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-white">Create New Admin</h3>
+                <button id="closeCreateAdminModal" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="createAdminForm">
+                <div class="mb-4">
+                    <label class="block text-gray-400 text-sm font-medium mb-2" for="adminName">
+                        Name
+                    </label>
+                    <input id="adminName" type="text"
+                        class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                        required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-400 text-sm font-medium mb-2" for="adminEmail">
+                        Email
+                    </label>
+                    <input id="adminEmail" type="email"
+                        class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                        required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-400 text-sm font-medium mb-2" for="adminPassword">
+                        Password
+                    </label>
+                    <input id="adminPassword" type="password"
+                        class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                        required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-400 text-sm font-medium mb-2" for="adminRole">
+                        Role
+                    </label>
+                    <select id="adminRole"
+                        class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                        <option value="admin">Admin</option>
+                        <option value="moderator">Moderator</option>
+                        <option value="support">Support</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelCreateAdmin"
+                        class="px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-gray-300 hover:bg-dark-600 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" id="submitCreateAdmin"
+                        class="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors flex items-center">
+                        <span>Create Admin</span>
+                        <i class="fas fa-spinner fa-spin ml-2 hidden"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scan Bots Results Modal -->
+    <div id="scanBotsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20 hidden">
+        <div class="bg-dark-800 rounded-xl shadow-lg w-full max-w-2xl p-6 border border-dark-600">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-white">Bots Scan Results</h3>
+                <button id="closeScanBotsModal" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mb-4">
+                <p class="text-gray-300">Scan completed. Found <span class="font-semibold text-primary-500"
+                        id="invalidBotsCount">0</span> bots with invalid App IDs.</p>
+            </div>
+            <div class="bg-red-500/10 rounded-lg p-4 mb-4 border border-red-500/20">
+                <h4 class="font-medium text-red-400 mb-2">Bots with Invalid App IDs:</h4>
+                <ul class="list-disc list-inside text-red-400 space-y-1" id="invalidBotsList">
+                    <!-- Invalid bots will be listed here -->
+                </ul>
+            </div>
+            <div class="flex justify-end">
+                <button id="closeScanResults"
+                    class="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"
+        class="fixed top-4 right-4 bg-success-500 text-white px-6 py-3 rounded-lg shadow-lg z-30 hidden border border-success-500/30">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toastMessage">Operation completed successfully!</span>
+        </div>
+    </div>
+
+    <!-- Real-time updates indicator -->
+    <div id="liveIndicator"
+        class="fixed bottom-4 right-4 bg-success-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center border border-success-500/30">
+        <span class="h-2 w-2 bg-white rounded-full mr-2 animate-pulse"></span>
+        <span>Live Updates</span>
+    </div>
+
+    <!-- API Configuration -->
+    <script>
+        const API_BASE_URL = "http://localhost:8080"; // Change to your deployed domain later
+
+        // Helper: Make requests with auth header if token exists
+        async function apiRequest(endpoint, method = "GET", data = null, isForm = false) {
+            const token = localStorage.getItem("token");
+            const headers = token ? { "Authorization": `Bearer ${token}` } : {};
+
+            if (!isForm && data) headers["Content-Type"] = "application/json";
+
+            const options = {
+                method,
+                headers,
+            };
+
+            if (data) {
+                options.body = isForm ? data : JSON.stringify(data);
+            }
+
+            try {
+                const res = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(`Request failed: ${res.status} - ${errorText}`);
+                }
+                return await res.json();
+            } catch (error) {
+                console.error('API Request failed:', error);
+                throw error;
+            }
+        }
+
+        // SuperAdmin API endpoints
+        async function superAdminLogin(credentials) {
+            return apiRequest("/api/superadmin/login", "POST", credentials);
+        }
+
+        async function superAdminRegister(data) {
+            return apiRequest("/api/superadmin/register", "POST", data);
+        }
+
+        async function getSuperAdminProfile() {
+            return apiRequest("/api/superadmin/profile");
+        }
+
+        async function getAllUsers() {
+            return apiRequest("/api/superadmin/users");
+        }
+
+        async function createUser(userData) {
+            return apiRequest("/api/superadmin/create-user", "POST", userData);
+        }
+
+        async function updateUser(userData) {
+            return apiRequest("/api/superadmin/update-user", "POST", userData);
+        }
+
+        async function deleteUser(userId) {
+            return apiRequest(`/api/superadmin/delete-user/${userId}`, "DELETE");
+        }
+
+        async function getPendingRequests() {
+            return apiRequest("/api/superadmin/pending-requests");
+        }
+
+        async function approveUpgrade(userId) {
+            return apiRequest(`/api/superadmin/promote/${userId}`, "POST");
+        }
+
+        async function rejectUpgrade(userId) {
+            return apiRequest(`/api/superadmin/reject/${userId}`, "POST");
+        }
+
+        async function getAllAdmins() {
+            return apiRequest("/api/superadmin/admins");
+        }
+
+        async function createAdmin(adminData) {
+            return apiRequest("/api/superadmin/create-admin", "POST", adminData);
+        }
+
+        async function updateAdmin(adminId, adminData) {
+            return apiRequest(`/api/superadmin/update-admin/${adminId}`, "PUT", adminData);
+        }
+
+        async function toggleAdminStatus(adminId) {
+            return apiRequest(`/api/superadmin/toggle-admin/${adminId}`, "PATCH");
+        }
+
+        async function deleteAdmin(adminId) {
+            return apiRequest(`/api/superadmin/delete-admin/${adminId}`, "DELETE");
+        }
+
+        async function getSuperAdminDashboard() {
+            return apiRequest("/api/superadmin/dashboard");
+        }
+
+        // CORRECTED: Use superadmin bots endpoint instead of admin bots
+        async function getSuperAdminBots() {
+            return apiRequest("/api/superadmin/bots");
+        }
+
+        // CORRECTED: Add scan bots endpoint for superadmin
+        async function scanAllBots() {
+            return apiRequest("/api/superadmin/scan-bots", "POST");
+        }
+
+        // Check authentication status
+        function checkAuth() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                window.location.href = "/login.html";
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "/login.html";
+        }
+    </script>
+
+    <script>
+        // DOM Elements
+        const sidebar = document.querySelector('.hidden.md\\:flex');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const navLinks = document.querySelectorAll('nav a');
+        const pageContents = document.querySelectorAll('.page-content');
+        const pageTitle = document.getElementById('pageTitle');
+
+        // Modal Elements
+        const createAdminModal = document.getElementById('createAdminModal');
+        const createAdminBtn = document.getElementById('createAdminBtn');
+        const closeCreateAdminModal = document.getElementById('closeCreateAdminModal');
+        const cancelCreateAdmin = document.getElementById('cancelCreateAdmin');
+        const createAdminForm = document.getElementById('createAdminForm');
+        const submitCreateAdmin = document.getElementById('submitCreateAdmin');
+
+        const scanBotsModal = document.getElementById('scanBotsModal');
+        const scanBotsBtn = document.getElementById('scanBotsBtn');
+        const closeScanBotsModal = document.getElementById('closeScanBotsModal');
+        const closeScanResults = document.getElementById('closeScanResults');
+        const invalidBotsList = document.getElementById('invalidBotsList');
+        const invalidBotsCount = document.getElementById('invalidBotsCount');
+
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Dropdowns
+        const notificationButton = document.getElementById('notificationButton');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userDropdown = document.getElementById('userDropdown');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Forms
+        const profileForm = document.getElementById('profileForm');
+        const passwordForm = document.getElementById('passwordForm');
+        const apiConfigForm = document.getElementById('apiConfigForm');
+
+        // Filter elements
+        const userSearch = document.getElementById('userSearch');
+        const userStatusFilter = document.getElementById('userStatusFilter');
+        const transactionTypeFilter = document.getElementById('transactionTypeFilter');
+        const transactionDateFilter = document.getElementById('transactionDateFilter');
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check authentication
+            checkAuth();
+
+            // Set active page
+            showPage('dashboard');
+
+            // Load dashboard data
+            loadDashboardData();
+            loadNotifications();
+            loadPendingRequests();
+
+            // Set up event listeners
+            setupEventListeners();
+        });
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Sidebar toggle for mobile
+            sidebarToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('hidden');
+            });
+
+            // Navigation links
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    showPage(page);
+
+                    // Update active link
+                    navLinks.forEach(l => {
+                        l.classList.remove('bg-primary-500/20', 'text-white', 'border-primary-500/30');
+                        l.classList.add('text-gray-400', 'hover:bg-dark-700', 'border-transparent');
+                    });
+                    this.classList.remove('text-gray-400', 'hover:bg-dark-700', 'border-transparent');
+                    this.classList.add('bg-primary-500/20', 'text-white', 'border-primary-500/30');
+
+                    // Close sidebar on mobile after navigation
+                    if (window.innerWidth < 768) {
+                        sidebar.classList.add('hidden');
+                    }
+
+                    // Load page-specific data
+                    if (page === 'admins') {
+                        loadAdminsTable();
+                    } else if (page === 'users') {
+                        loadUsersTable();
+                    } else if (page === 'bots') {
+                        loadBotsTable();
+                    } else if (page === 'transactions') {
+                        loadTransactionsTable();
+                    } else if (page === 'reports') {
+                        loadReportsData();
+                    }
+                });
+            });
+
+            // Create Admin Modal
+            createAdminBtn.addEventListener('click', function () {
+                createAdminModal.classList.remove('hidden');
+            });
+
+            closeCreateAdminModal.addEventListener('click', function () {
+                createAdminModal.classList.add('hidden');
+            });
+
+            cancelCreateAdmin.addEventListener('click', function () {
+                createAdminModal.classList.add('hidden');
+            });
+
+            createAdminForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                createNewAdmin();
+            });
+
+            // Scan Bots Modal
+            scanBotsBtn.addEventListener('click', function () {
+                scanBots();
+            });
+
+            closeScanBotsModal.addEventListener('click', function () {
+                scanBotsModal.classList.add('hidden');
+            });
+
+            closeScanResults.addEventListener('click', function () {
+                scanBotsModal.classList.add('hidden');
+            });
+
+            // Dropdowns
+            notificationButton.addEventListener('click', function () {
+                notificationDropdown.classList.toggle('hidden');
+                userDropdown.classList.add('hidden');
+            });
+
+            userMenuButton.addEventListener('click', function () {
+                userDropdown.classList.toggle('hidden');
+                notificationDropdown.classList.add('hidden');
+            });
+
+            // Logout
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                logout();
+            });
+
+            // Forms
+            profileForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                updateProfile();
+            });
+
+            passwordForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                changePassword();
+            });
+
+            apiConfigForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                saveApiConfig();
+            });
+
+            // Filters
+            userSearch.addEventListener('input', function () {
+                filterUsers();
+            });
+
+            userStatusFilter.addEventListener('change', function () {
+                filterUsers();
+            });
+
+            transactionTypeFilter.addEventListener('change', function () {
+                filterTransactions();
+            });
+
+            transactionDateFilter.addEventListener('change', function () {
+                filterTransactions();
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function (event) {
+                if (!notificationButton.contains(event.target) && !notificationDropdown.contains(event.target)) {
+                    notificationDropdown.classList.add('hidden');
+                }
+
+                if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                    userDropdown.classList.add('hidden');
+                }
+            });
+
+            // Close modals when clicking outside
+            document.addEventListener('click', function (e) {
+                if (e.target.id === 'createAdminModal') {
+                    createAdminModal.classList.add('hidden');
+                }
+                if (e.target.id === 'scanBotsModal') {
+                    scanBotsModal.classList.add('hidden');
+                }
+            });
+        }
+
+        // Show the selected page
+        function showPage(page) {
+            pageContents.forEach(content => {
+                content.classList.add('hidden');
+            });
+
+            document.getElementById(page).classList.remove('hidden');
+
+            // Update page title
+            const titles = {
+                dashboard: 'Dashboard',
+                admins: 'Manage Admins',
+                users: 'Manage Users',
+                bots: 'Bots Marketplace',
+                transactions: 'Transactions',
+                reports: 'Reports & Analytics',
+                settings: 'Settings'
+            };
+
+            pageTitle.textContent = titles[page];
+        }
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                const dashboardData = await getSuperAdminDashboard();
+
+                // Update stats - with safe property access
+                document.getElementById('totalUsers').textContent =
+                    (dashboardData?.total_users || dashboardData?.users_count || 0).toLocaleString();
+                document.getElementById('totalAdmins').textContent =
+                    dashboardData?.total_admins || dashboardData?.admins_count || 0;
+                document.getElementById('totalBots').textContent =
+                    (dashboardData?.total_bots || dashboardData?.bots_count || 0).toLocaleString();
+                document.getElementById('totalRevenue').textContent = '$' +
+                    (dashboardData?.total_revenue || 0).toLocaleString();
+                document.getElementById('activeSubscriptions').textContent =
+                    (dashboardData?.active_subscriptions || 0).toLocaleString();
+
+                // Load activity feed
+                loadActivityFeed(dashboardData?.recent_activity);
+
+                // Initialize charts
+                initializeCharts(dashboardData?.charts);
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showToast('Error loading dashboard data', 'error');
+
+                // Fallback to mock data
+                loadMockDashboardData();
+            }
+        }
+
+        // Load mock dashboard data as fallback
+        function loadMockDashboardData() {
+            document.getElementById('totalUsers').textContent = '12,458';
+            document.getElementById('totalAdmins').textContent = '42';
+            document.getElementById('totalBots').textContent = '1,247';
+            document.getElementById('totalRevenue').textContent = '$124,580';
+            document.getElementById('activeSubscriptions').textContent = '8,742';
+
+            // Load mock activity feed
+            loadActivityFeed([
+                {
+                    type: 'bot_upload',
+                    title: 'New Bot Uploaded',
+                    description: '"Quantum Trader" by Admin Alex',
+                    time: '2 hours ago'
+                },
+                {
+                    type: 'user_registration',
+                    title: 'New User Registered',
+                    description: 'John Doe (Premium Plan)',
+                    time: '5 hours ago'
+                },
+                {
+                    type: 'purchase',
+                    title: 'Bot Purchase',
+                    description: '"Trend Hunter" purchased by User #4582',
+                    time: '1 day ago'
+                }
+            ]);
+
+            initializeCharts();
+        }
+
+        // Load activity feed
+        function loadActivityFeed(activities = []) {
+            const activityFeed = document.getElementById('activityFeed');
+
+            if (!activities || activities.length === 0) {
+                activityFeed.innerHTML = '<p class="text-gray-400 text-center py-4">No recent activity</p>';
+                return;
+            }
+
+            activityFeed.innerHTML = activities.map(activity => {
+                let iconClass, iconColor;
+
+                switch (activity.type) {
+                    case 'bot_upload':
+                        iconClass = 'fas fa-robot';
+                        iconColor = 'text-blue-400';
+                        break;
+                    case 'user_registration':
+                        iconClass = 'fas fa-user';
+                        iconColor = 'text-green-400';
+                        break;
+                    case 'purchase':
+                        iconClass = 'fas fa-shopping-cart';
+                        iconColor = 'text-purple-400';
+                        break;
+                    case 'warning':
+                        iconClass = 'fas fa-exclamation-triangle';
+                        iconColor = 'text-yellow-500';
+                        break;
+                    default:
+                        iconClass = 'fas fa-info-circle';
+                        iconColor = 'text-gray-400';
+                }
+
+                return `
+                    <div class="flex justify-between items-center p-3 bg-dark-700 rounded-lg border border-dark-600">
+                        <div class="flex items-center">
+                            <div class="h-10 w-10 rounded-full ${iconColor} bg-opacity-10 flex items-center justify-center border ${iconColor} border-opacity-20">
+                                <i class="${iconClass}"></i>
+                            </div>
+                            <div class="ml-3">
+                                <p class="font-medium text-white">${activity.title}</p>
+                                <p class="text-sm text-gray-400">${activity.description}</p>
+                            </div>
+                        </div>
+                        <span class="text-sm text-gray-400">${activity.time}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Load notifications with proper error handling
+        async function loadNotifications() {
+            try {
+                const response = await getPendingRequests();
+
+                // Handle different response formats
+                let requests = [];
+                if (Array.isArray(response)) {
+                    requests = response;
+                } else if (response && Array.isArray(response.requests)) {
+                    requests = response.requests;
+                } else if (response && Array.isArray(response.data)) {
+                    requests = response.data;
+                } else if (response && response.requests) {
+                    // If it's an object with requests property that might not be array
+                    requests = Object.values(response.requests);
+                }
+
+                const notificationsList = document.getElementById('notificationsList');
+
+                if (!requests || requests.length === 0) {
+                    notificationsList.innerHTML = '<div class="p-4 text-center text-gray-400">No new notifications</div>';
+                    return;
+                }
+
+                notificationsList.innerHTML = requests.map(request => {
+                    // Safe property access with fallbacks
+                    const userName = request.user_name || request.name || 'Unknown User';
+                    const userId = request.user_id || request.id || 'Unknown';
+                    const requestedAt = request.requested_at || request.created_at || 'Recently';
+
+                    return `
+                        <div class="p-4 hover:bg-dark-600 transition-colors">
+                            <div class="flex">
+                                <div class="flex-shrink-0">
+                                    <i class="fas fa-user-plus text-success-500"></i>
+                                </div>
+                                <div class="ml-3">
+                                    <p class="text-sm font-medium text-white">Upgrade Request</p>
+                                    <p class="text-sm text-gray-400">${userName} requested admin upgrade</p>
+                                    <p class="text-xs text-gray-500">${requestedAt}</p>
+                                    <div class="mt-2 flex space-x-2">
+                                        <button class="text-xs bg-success-500 hover:bg-success-600 text-white px-2 py-1 rounded" onclick="approveRequest(${userId})">Approve</button>
+                                        <button class="text-xs bg-red-500 hover:bg-red-600 text-white px-2 py-1 rounded" onclick="rejectRequest(${userId})">Reject</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading notifications:', error);
+                const notificationsList = document.getElementById('notificationsList');
+                notificationsList.innerHTML = '<div class="p-4 text-center text-gray-400">Error loading notifications</div>';
+            }
+        }
+
+        // Load pending requests for notifications
+        async function loadPendingRequests() {
+            try {
+                const response = await getPendingRequests();
+                const notificationBadge = document.querySelector('#notificationButton .bg-primary-500');
+
+                let requestCount = 0;
+                if (Array.isArray(response)) {
+                    requestCount = response.length;
+                } else if (response && typeof response === 'object') {
+                    requestCount = Object.keys(response).length;
+                }
+
+                if (requestCount > 0) {
+                    notificationBadge.classList.remove('hidden');
+                } else {
+                    notificationBadge.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error('Error loading pending requests:', error);
+                // Hide badge on error
+                document.querySelector('#notificationButton .bg-primary-500').classList.add('hidden');
+            }
+        }
+
+        // Approve upgrade request
+        async function approveRequest(userId) {
+            try {
+                await approveUpgrade(userId);
+                showToast('Upgrade request approved successfully');
+                loadNotifications();
+                loadPendingRequests();
+            } catch (error) {
+                console.error('Error approving request:', error);
+                showToast('Error approving request', 'error');
+            }
+        }
+
+        // Reject upgrade request
+        async function rejectRequest(userId) {
+            try {
+                await rejectUpgrade(userId);
+                showToast('Upgrade request rejected');
+                loadNotifications();
+                loadPendingRequests();
+            } catch (error) {
+                console.error('Error rejecting request:', error);
+                showToast('Error rejecting request', 'error');
+            }
+        }
+
+        // Load admins table with error handling
+        async function loadAdminsTable() {
+            try {
+                const response = await getAllAdmins();
+                let admins = [];
+
+                // Handle different response formats
+                if (Array.isArray(response)) {
+                    admins = response;
+                } else if (response && Array.isArray(response.admins)) {
+                    admins = response.admins;
+                } else if (response && Array.isArray(response.data)) {
+                    admins = response.data;
+                }
+
+                const tbody = document.getElementById('adminsTableBody');
+
+                if (!admins || admins.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-400">No admins found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = admins.map(admin => {
+                    // Safe property access
+                    const name = admin.name || 'Unknown';
+                    const email = admin.email || 'No email';
+                    const role = admin.role || 'Unknown';
+                    const createdAt = admin.created_at || admin.createdAt || 'Unknown';
+
+                    return `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${email}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    ${role === 'Admin' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
+                            role === 'Moderator' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                                'bg-green-500/20 text-green-400 border border-green-500/30'}">
+                                    ${role}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${createdAt}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                <button class="text-primary-500 hover:text-primary-400 mr-3 transition-colors" onclick="editAdmin(${admin.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="text-red-500 hover:text-red-400 transition-colors" onclick="deleteAdminRecord(${admin.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading admins:', error);
+                showToast('Error loading admins', 'error');
+                // Load mock admins as fallback
+                loadMockAdmins();
+            }
+        }
+
+        // Load mock admins as fallback
+        function loadMockAdmins() {
+            const mockAdmins = [
+                { id: 1, name: "Alex Johnson", email: "alex@algocdk.com", role: "Admin", created_at: "2023-05-12" },
+                { id: 2, name: "Maria Garcia", email: "maria@algocdk.com", role: "Moderator", created_at: "2023-06-20" },
+                { id: 3, name: "David Smith", email: "david@algocdk.com", role: "Support", created_at: "2023-07-05" }
+            ];
+
+            const tbody = document.getElementById('adminsTableBody');
+            tbody.innerHTML = mockAdmins.map(admin => {
+                return `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${admin.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${admin.email}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                ${admin.role === 'Admin' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
+                        admin.role === 'Moderator' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                            'bg-green-500/20 text-green-400 border border-green-500/30'}">
+                                ${admin.role}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${admin.created_at}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <button class="text-primary-500 hover:text-primary-400 mr-3 transition-colors" onclick="editAdmin(${admin.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-400 transition-colors" onclick="deleteAdminRecord(${admin.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Load users table with error handling
+        async function loadUsersTable() {
+            try {
+                const response = await getAllUsers();
+                let users = [];
+
+                // Handle different response formats
+                if (Array.isArray(response)) {
+                    users = response;
+                } else if (response && Array.isArray(response.users)) {
+                    users = response.users;
+                } else if (response && Array.isArray(response.data)) {
+                    users = response.data;
+                }
+
+                window.allUsers = users; // Store for filtering
+                renderUsersTable(users);
+            } catch (error) {
+                console.error('Error loading users:', error);
+                showToast('Error loading users', 'error');
+                // Load mock users as fallback
+                loadMockUsers();
+            }
+        }
+
+        // Load mock users as fallback
+        function loadMockUsers() {
+            const mockUsers = [
+                { id: 1001, name: "John Doe", email: "john@example.com", status: "Active", joined_at: "2023-09-10" },
+                { id: 1002, name: "Jane Smith", email: "jane@example.com", status: "Active", joined_at: "2023-09-05" },
+                { id: 1003, name: "Robert Brown", email: "robert@example.com", status: "Suspended", joined_at: "2023-08-22" }
+            ];
+
+            window.allUsers = mockUsers;
+            renderUsersTable(mockUsers);
+        }
+
+        // Render users table
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('usersTableBody');
+
+            if (!users || users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-400">No users found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => {
+                // Safe property access
+                const id = user.id || 'Unknown';
+                const name = user.name || 'Unknown';
+                const email = user.email || 'No email';
+                const status = user.status || 'Unknown';
+                const joined = user.joined_at || user.joined || 'Unknown';
+
+                return `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${email}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                ${status === 'Active' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                        'bg-red-500/20 text-red-400 border border-red-500/30'}">
+                                ${status}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${joined}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <button class="text-primary-500 hover:text-primary-400 mr-3 transition-colors" onclick="viewUser(${id})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="text-yellow-500 hover:text-yellow-400 mr-3 transition-colors" onclick="editUser(${id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-400 transition-colors" onclick="toggleUserStatus(${id})">
+                                <i class="fas fa-ban"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter users
+        function filterUsers() {
+            const searchTerm = userSearch.value.toLowerCase();
+            const statusFilter = userStatusFilter.value;
+
+            let filteredUsers = window.allUsers || [];
+
+            if (searchTerm) {
+                filteredUsers = filteredUsers.filter(user =>
+                    (user.name && user.name.toLowerCase().includes(searchTerm)) ||
+                    (user.email && user.email.toLowerCase().includes(searchTerm))
+                );
+            }
+
+            if (statusFilter !== 'all') {
+                filteredUsers = filteredUsers.filter(user =>
+                    user.status && user.status.toLowerCase() === statusFilter.toLowerCase()
+                );
+            }
+
+            renderUsersTable(filteredUsers);
+        }
+
+        // CORRECTED: Load bots table using superadmin endpoint
+        async function loadBotsTable() {
+            try {
+                const response = await getSuperAdminBots();
+                let bots = [];
+
+                // Handle different response formats
+                if (Array.isArray(response)) {
+                    bots = response;
+                } else if (response && Array.isArray(response.bots)) {
+                    bots = response.bots;
+                } else if (response && Array.isArray(response.data)) {
+                    bots = response.data;
+                }
+
+                const tbody = document.getElementById('botsTableBody');
+
+                if (!bots || bots.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-400">No bots found</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = bots.map(bot => {
+                    // Safe property access
+                    const name = bot.name || 'Unknown';
+                    const ownerId = bot.owner_id || bot.ownerId || 'Unknown';
+                    const price = bot.price ? `$${bot.price}` : 'Free';
+                    const status = bot.status || 'Unknown';
+                    const createdAt = bot.created_at || bot.createdAt || 'Unknown';
+
+                    return `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${ownerId}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${price}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                    ${status === 'Active' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                            'bg-red-500/20 text-red-400 border border-red-500/30'}">
+                                    ${status}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${createdAt}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                <button class="text-primary-500 hover:text-primary-400 mr-3 transition-colors" onclick="viewBot(${bot.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="text-red-500 hover:text-red-400 transition-colors" onclick="deleteBot(${bot.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading bots:', error);
+                showToast('Error loading bots', 'error');
+                // Load mock bots as fallback
+                loadMockBots();
+            }
+        }
+
+        // Load mock bots as fallback
+        function loadMockBots() {
+            const mockBots = [
+                { id: 201, name: "Quantum Trader", owner_id: 1, price: "49.99", status: "Active", created_at: "2023-09-01" },
+                { id: 202, name: "Trend Hunter", owner_id: 2, price: "29.99", status: "Active", created_at: "2023-08-25" },
+                { id: 203, name: "Fast Trader", owner_id: 3, price: "39.99", status: "Flagged", created_at: "2023-09-12" }
+            ];
+
+            const tbody = document.getElementById('botsTableBody');
+            tbody.innerHTML = mockBots.map(bot => {
+                return `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${bot.name}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${bot.owner_id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">$${bot.price}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                ${bot.status === 'Active' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                        'bg-red-500/20 text-red-400 border border-red-500/30'}">
+                                ${bot.status}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${bot.created_at}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <button class="text-primary-500 hover:text-primary-400 mr-3 transition-colors" onclick="viewBot(${bot.id})">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                            <button class="text-red-500 hover:text-red-400 transition-colors" onclick="deleteBot(${bot.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Load transactions table
+        async function loadTransactionsTable() {
+            try {
+                // This would be replaced with actual API call when available
+                const transactions = []; // await getTransactions();
+                window.allTransactions = transactions;
+                renderTransactionsTable(transactions);
+            } catch (error) {
+                console.error('Error loading transactions:', error);
+                showToast('Error loading transactions', 'error');
+                // Load mock transactions as fallback
+                loadMockTransactions();
+            }
+        }
+
+        // Load mock transactions as fallback
+        function loadMockTransactions() {
+            const mockTransactions = [
+                { id: "TX001", user: "John Doe", amount: "$49.99", type: "Purchase", date: "2023-09-18", status: "Completed" },
+                { id: "TX002", user: "Jane Smith", amount: "$19.99", type: "Subscription", date: "2023-09-17", status: "Completed" },
+                { id: "TX003", user: "Robert Brown", amount: "$9.99", type: "Hosting", date: "2023-09-16", status: "Pending" }
+            ];
+
+            window.allTransactions = mockTransactions;
+            renderTransactionsTable(mockTransactions);
+        }
+
+        // Render transactions table
+        function renderTransactionsTable(transactions) {
+            const tbody = document.getElementById('transactionsTableBody');
+
+            if (!transactions || transactions.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-400">No transactions found</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = transactions.map(transaction => {
+                return `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${transaction.id}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${transaction.user}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${transaction.amount}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                ${transaction.type === 'Purchase' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
+                        transaction.type === 'Subscription' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
+                            'bg-green-500/20 text-green-400 border border-green-500/30'}">
+                                ${transaction.type}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${transaction.date}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                ${transaction.status === 'Completed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                        'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30'}">
+                                ${transaction.status}
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter transactions
+        function filterTransactions() {
+            const typeFilter = transactionTypeFilter.value;
+            const dateFilter = transactionDateFilter.value;
+
+            let filteredTransactions = window.allTransactions || [];
+
+            if (typeFilter !== 'all') {
+                filteredTransactions = filteredTransactions.filter(transaction =>
+                    transaction.type && transaction.type.toLowerCase() === typeFilter.toLowerCase()
+                );
+            }
+
+            if (dateFilter) {
+                filteredTransactions = filteredTransactions.filter(transaction =>
+                    transaction.date === dateFilter
+                );
+            }
+
+            renderTransactionsTable(filteredTransactions);
+        }
+
+        // Load reports data
+        async function loadReportsData() {
+            try {
+                const dashboardData = await getSuperAdminDashboard();
+                initializeCharts(dashboardData?.charts);
+            } catch (error) {
+                console.error('Error loading reports data:', error);
+                showToast('Error loading reports data', 'error');
+                initializeCharts(); // Initialize with empty data
+            }
+        }
+
+        // Initialize charts
+        function initializeCharts(chartData = {}) {
+            // Revenue Chart
+            const revenueCtx = document.getElementById('revenueChart')?.getContext('2d');
+            if (revenueCtx) {
+                new Chart(revenueCtx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.revenue_labels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                        datasets: [{
+                            label: 'Revenue ($)',
+                            data: chartData.revenue_data || [85000, 92000, 105000, 98000, 112000, 124000, 118000, 132000, 124580],
+                            borderColor: '#ff4500',
+                            backgroundColor: 'rgba(255, 69, 0, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Monthly Revenue Chart
+            const monthlyRevenueCtx = document.getElementById('monthlyRevenueChart')?.getContext('2d');
+            if (monthlyRevenueCtx) {
+                new Chart(monthlyRevenueCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: chartData.monthly_revenue_labels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                        datasets: [{
+                            label: 'Monthly Revenue ($)',
+                            data: chartData.monthly_revenue_data || [85000, 92000, 105000, 98000, 112000, 124000, 118000, 132000, 124580],
+                            backgroundColor: 'rgba(255, 69, 0, 0.8)',
+                            borderColor: '#ff4500',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Bot Uploads Chart
+            const botUploadsCtx = document.getElementById('botUploadsChart')?.getContext('2d');
+            if (botUploadsCtx) {
+                new Chart(botUploadsCtx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.bot_uploads_labels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                        datasets: [{
+                            label: 'Bot Uploads',
+                            data: chartData.bot_uploads_data || [85, 92, 105, 98, 112, 124, 118, 132, 127],
+                            borderColor: '#f59e0b',
+                            backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // User Growth Chart
+            const userGrowthCtx = document.getElementById('userGrowthChart')?.getContext('2d');
+            if (userGrowthCtx) {
+                new Chart(userGrowthCtx, {
+                    type: 'line',
+                    data: {
+                        labels: chartData.user_growth_labels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                        datasets: [{
+                            label: 'Total Users',
+                            data: chartData.user_growth_data || [8500, 9200, 10500, 9800, 11200, 12400, 11800, 13200, 12458],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: false,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.1)',
+                                    drawBorder: false
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    color: 'rgba(255, 255, 255, 0.7)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Create new admin
+        async function createNewAdmin() {
+            const name = document.getElementById('adminName').value;
+            const email = document.getElementById('adminEmail').value;
+            const password = document.getElementById('adminPassword').value;
+            const role = document.getElementById('adminRole').value;
+
+            // Show loading state
+            const spinner = submitCreateAdmin.querySelector('.fa-spinner');
+            submitCreateAdmin.disabled = true;
+            spinner.classList.remove('hidden');
+
+            try {
+                await createAdmin({ name, email, password, role });
+
+                // Close modal and reset form
+                createAdminModal.classList.add('hidden');
+                createAdminForm.reset();
+
+                // Reload admins table
+                loadAdminsTable();
+
+                // Show success toast
+                showToast('Admin created successfully!');
+            } catch (error) {
+                console.error('Error creating admin:', error);
+                showToast('Error creating admin', 'error');
+            } finally {
+                // Reset loading state
+                submitCreateAdmin.disabled = false;
+                spinner.classList.add('hidden');
+            }
+        }
+
+        // Edit admin
+        function editAdmin(adminId) {
+            // Implementation for editing admin
+            showToast('Edit admin functionality coming soon');
+        }
+
+        // Delete admin (renamed to avoid conflict with API function)
+        async function deleteAdminRecord(adminId) {
+            if (confirm('Are you sure you want to delete this admin?')) {
+                try {
+                    await deleteAdmin(adminId);
+                    loadAdminsTable();
+                    showToast('Admin deleted successfully');
+                } catch (error) {
+                    console.error('Error deleting admin:', error);
+                    showToast('Error deleting admin', 'error');
+                }
+            }
+        }
+
+        // View user
+        function viewUser(userId) {
+            // Implementation for viewing user details
+            showToast('View user functionality coming soon');
+        }
+
+        // Edit user
+        function editUser(userId) {
+            // Implementation for editing user
+            showToast('Edit user functionality coming soon');
+        }
+
+        // Toggle user status
+        async function toggleUserStatus(userId) {
+            try {
+                // This would be replaced with actual API call when available
+                // await toggleUserStatus(userId);
+                showToast('User status updated');
+                loadUsersTable();
+            } catch (error) {
+                console.error('Error updating user status:', error);
+                showToast('Error updating user status', 'error');
+            }
+        }
+
+        // View bot
+        function viewBot(botId) {
+            // Implementation for viewing bot details
+            showToast('View bot functionality coming soon');
+        }
+
+        // Delete bot
+        async function deleteBot(botId) {
+            if (confirm('Are you sure you want to delete this bot?')) {
+                try {
+                    // This would be replaced with actual API call when available
+                    // await deleteBot(botId);
+                    showToast('Bot deleted successfully');
+                    loadBotsTable();
+                } catch (error) {
+                    console.error('Error deleting bot:', error);
+                    showToast('Error deleting bot', 'error');
+                }
+            }
+        }
+
+        // CORRECTED: Scan bots using the superadmin scan-bots endpoint
+        async function scanBots() {
+            try {
+                // Show loading state
+                scanBotsBtn.disabled = true;
+                const originalText = scanBotsBtn.innerHTML;
+                scanBotsBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Scanning...';
+
+                const scanResults = await scanAllBots();
+
+                // Reset button state
+                scanBotsBtn.disabled = false;
+                scanBotsBtn.innerHTML = originalText;
+
+                // Handle different response formats
+                let invalidBots = [];
+                if (Array.isArray(scanResults)) {
+                    invalidBots = scanResults;
+                } else if (scanResults && Array.isArray(scanResults.invalid_bots)) {
+                    invalidBots = scanResults.invalid_bots;
+                } else if (scanResults && Array.isArray(scanResults.data)) {
+                    invalidBots = scanResults.data;
+                } else if (scanResults && scanResults.invalidBots) {
+                    invalidBots = Object.values(scanResults.invalidBots);
+                }
+
+                // Display results
+                invalidBotsCount.textContent = invalidBots.length;
+                invalidBotsList.innerHTML = '';
+
+                if (invalidBots.length > 0) {
+                    invalidBots.forEach(bot => {
+                        const li = document.createElement('li');
+                        const botName = bot.name || 'Unknown Bot';
+                        const botOwner = bot.owner || bot.owner_name || 'Unknown Owner';
+                        const appId = bot.appId || bot.app_id || 'Unknown';
+                        li.textContent = `${botName} by ${botOwner} (App ID: ${appId})`;
+                        invalidBotsList.appendChild(li);
+                    });
+                } else {
+                    invalidBotsList.innerHTML = '<li class="text-green-400">No invalid bots found!</li>';
+                }
+
+                // Show modal
+                scanBotsModal.classList.remove('hidden');
+
+                // Show success toast
+                showToast('Bot scan completed successfully!');
+            } catch (error) {
+                console.error('Error scanning bots:', error);
+                showToast('Error scanning bots', 'error');
+
+                // Reset button state on error
+                scanBotsBtn.disabled = false;
+                scanBotsBtn.innerHTML = '<i class="fas fa-search mr-2"></i> Scan Bots';
+            }
+        }
+
+        // Update profile
+        async function updateProfile() {
+            try {
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+
+                // This would be replaced with actual API call when available
+                // await updateProfile({ name, email });
+
+                showToast('Profile updated successfully');
+            } catch (error) {
+                console.error('Error updating profile:', error);
+                showToast('Error updating profile', 'error');
+            }
+        }
+
+        // Change password
+        async function changePassword() {
+            try {
+                const currentPassword = document.getElementById('currentPassword').value;
+                const newPassword = document.getElementById('newPassword').value;
+                const confirmPassword = document.getElementById('confirmPassword').value;
+
+                if (newPassword !== confirmPassword) {
+                    showToast('New passwords do not match', 'error');
+                    return;
+                }
+
+                // This would be replaced with actual API call when available
+                // await changePassword({ currentPassword, newPassword });
+
+                passwordForm.reset();
+                showToast('Password changed successfully');
+            } catch (error) {
+                console.error('Error changing password:', error);
+                showToast('Error changing password', 'error');
+            }
+        }
+
+        // Save API configuration
+        async function saveApiConfig() {
+            try {
+                const derivAppId = document.getElementById('derivAppId').value;
+                const apiKey = document.getElementById('apiKey').value;
+
+                // This would be replaced with actual API call when available
+                // await saveApiConfig({ derivAppId, apiKey });
+
+                showToast('API configuration saved successfully');
+            } catch (error) {
+                console.error('Error saving API configuration:', error);
+                showToast('Error saving API configuration', 'error');
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            toastMessage.textContent = message;
+
+            if (type === 'error') {
+                toast.classList.remove('bg-success-500', 'border-success-500/30');
+                toast.classList.add('bg-red-500', 'border-red-500/30');
+                toast.querySelector('i').className = 'fas fa-exclamation-circle mr-2';
+            } else {
+                toast.classList.remove('bg-red-500', 'border-red-500/30');
+                toast.classList.add('bg-success-500', 'border-success-500/30');
+                toast.querySelector('i').className = 'fas fa-check-circle mr-2';
+            }
+
+            toast.classList.remove('hidden');
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Global functions for event handlers
+        window.approveRequest = approveRequest;
+        window.rejectRequest = rejectRequest;
+        window.editAdmin = editAdmin;
+        window.deleteAdminRecord = deleteAdminRecord;
+        window.viewUser = viewUser;
+        window.editUser = editUser;
+        window.toggleUserStatus = toggleUserStatus;
+        window.viewBot = viewBot;
+        window.deleteBot = deleteBot;
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,960 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Market Data | AlgoCDK - AI Trading Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff0f0',
+                            100: '#ffd6d6',
+                            500: '#ff4500',
+                            600: '#e63e00',
+                            700: '#cc3700',
+                        },
+                        dark: {
+                            900: '#000000',
+                            800: '#1a1a1a',
+                            700: '#333333',
+                            600: '#4d4d4d',
+                        },
+                        success: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff4500;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e63e00;
+        }
+
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .price-up {
+            color: #10b981;
+        }
+
+        .price-down {
+            color: #ef4444;
+        }
+
+        .market-open {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .market-closed {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .chart-container {
+            position: relative;
+            height: 500px;
+            width: 100%;
+        }
+
+        .chartjs-tooltip {
+            background: rgba(26, 26, 26, 0.9);
+            border: 1px solid #333333;
+            border-radius: 4px;
+            padding: 8px 12px;
+            color: white;
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-white">
+    <nav class="bg-dark-800 border-b border-dark-700 py-3 px-6 flex justify-between items-center sticky top-0 z-10">
+        <div class="flex items-center">
+            <a href="#" class="text-xl font-bold text-white flex items-center">
+                <div class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                AlgoCDK
+            </a>
+        </div>
+        <div class="flex items-center space-x-4">
+            <div class="hidden md:flex items-center space-x-4">
+                <a href="botstore" class="text-gray-300 hover:text-white transition-colors">My Bots</a>
+                <a href="botstore" class="text-gray-300 hover:text-white transition-colors">Marketplace</a>
+                <a href="chart" class="text-primary-500 font-medium">Market Data</a>
+            </div>
+            <div class="relative">
+                <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
+                    <div
+                        class="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                        JD
+                    </div>
+                    <span class="hidden md:block">John Doe</span>
+                    <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                </button>
+                <div id="userDropdown"
+                    class="absolute right-0 mt-2 w-48 bg-dark-800 rounded-lg shadow-lg border border-dark-700 hidden z-10">
+                    <div class="py-1">
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">Profile</a>
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">My
+                            Bots</a>
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">Settings</a>
+                        <div class="border-t border-dark-700 my-1"></div>
+                        <a href="#" class="block px-4 py-2 text-sm text-red-500 hover:bg-dark-700 transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-7xl mx-auto px-4 py-6 fade-in">
+        <section class="mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                <div>
+                    <h1 class="text-3xl font-bold text-white mb-2">Real-Time Market Data</h1>
+                    <p class="text-gray-400">Live price charts and market information</p>
+                </div>
+                <div class="mt-4 md:mt-0 flex items-center space-x-2">
+                    <div class="flex items-center space-x-2 bg-dark-700 px-3 py-1 rounded-lg border border-dark-600">
+                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <span class="text-sm text-green-500">Live</span>
+                    </div>
+                    <div id="connectionStatus" class="market-open text-xs font-medium px-2 py-1 rounded border">
+                        Connecting...
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-6">
+            <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h2 class="text-lg font-semibold text-white mb-2">Select Market</h2>
+                        <p class="text-gray-400 text-sm">Choose a market to view real-time price data</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3">
+                        <div class="relative">
+                            <select id="marketSelect"
+                                class="bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white appearance-none pr-8">
+                                <option value="forex">Forex</option>
+                                <option value="cryptocurrency">Cryptocurrency</option>
+                                <option value="indices">Stock Indices</option>
+                                <option value="commodities">Commodities</option>
+                                <option value="volatility" selected>Volatility Indices</option>
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                        </div>
+                        <div class="relative">
+                            <select id="symbolSelect"
+                                class="bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white appearance-none pr-8">
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                        </div>
+                        <div class="relative">
+                            <select id="timeframeSelect"
+                                class="bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white appearance-none pr-8">
+                                <option value="1">1 Minute</option>
+                                <option value="5">5 Minutes</option>
+                                <option value="15" selected>15 Minutes</option>
+                                <option value="60">1 Hour</option>
+                                <option value="240">4 Hours</option>
+                                <option value="D">1 Day</option>
+                            </select>
+                            <i class="fas fa-chevron-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-6">
+            <div class="bg-dark-800 rounded-xl border border-dark-700 overflow-hidden">
+                <div class="p-6 border-b border-dark-700">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+                        <div>
+                            <h2 id="chartTitle" class="text-xl font-bold text-white">Volatility 75 Index - Real-Time
+                                Chart</h2>
+                            <div class="flex items-center mt-2">
+                                <span id="currentPrice" class="text-2xl font-bold text-white mr-4">Loading...</span>
+                                <span id="priceChange" class="price-up text-sm font-medium flex items-center">
+                                    <i class="fas fa-arrow-up mr-1"></i> Loading...
+                                </span>
+                            </div>
+                        </div>
+                        <div class="mt-4 md:mt-0 flex space-x-2">
+                            <button id="chartTypeBtn"
+                                class="bg-dark-700 text-white px-4 py-2 rounded-lg hover:bg-dark-600 transition-colors border border-dark-600">
+                                <i class="fas fa-chart-bar mr-2"></i> Candlestick
+                            </button>
+                            <button id="fullscreenBtn"
+                                class="bg-dark-700 text-white px-4 py-2 rounded-lg hover:bg-dark-600 transition-colors border border-dark-600">
+                                <i class="fas fa-expand"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-4">
+                    <div class="chart-container">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-400 text-sm">Open</p>
+                            <h3 id="openPrice" class="text-2xl font-bold text-white mt-2">Loading...</h3>
+                        </div>
+                        <div class="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                            <i class="fas fa-door-open text-blue-500"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-400 text-sm">High</p>
+                            <h3 id="highPrice" class="text-2xl font-bold text-white mt-2">Loading...</h3>
+                        </div>
+                        <div class="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                            <i class="fas fa-arrow-up text-green-500"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-400 text-sm">Low</p>
+                            <h3 id="lowPrice" class="text-2xl font-bold text-white mt-2">Loading...</h3>
+                        </div>
+                        <div class="p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+                            <i class="fas fa-arrow-down text-red-500"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-gray-400 text-sm">Volume</p>
+                            <h3 id="volume" class="text-2xl font-bold text-white mt-2">N/A</h3>
+                        </div>
+                        <div class="p-3 bg-purple-500/10 rounded-lg border border-purple-500/20">
+                            <i class="fas fa-chart-bar text-purple-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                <h2 class="text-lg font-semibold text-white mb-4">Trading Information</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-md font-medium text-white mb-3">Market Hours</h3>
+                        <div class="space-y-3">
+                            <div
+                                class="flex justify-between items-center p-3 bg-dark-700 rounded-lg border border-dark-600">
+                                <span class="text-gray-400">Market Open</span>
+                                <span class="text-white font-medium">24/7</span>
+                            </div>
+                            <div
+                                class="flex justify-between items-center p-3 bg-dark-700 rounded-lg border border-dark-600">
+                                <span class="text-gray-400">Trading Session</span>
+                                <span class="text-white font-medium">24/7 (Synthetic)</span>
+                            </div>
+                            <div
+                                class="flex justify-between items-center p-3 bg-dark-700 rounded-lg border border-dark-600">
+                                <span class="text-gray-400">Spread</span>
+                                <span class="text-white font-medium" id="spreadInfo">Variable</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-md font-medium text-white mb-3">Contract Details</h3>
+                        <div class="space-y-3">
+                            <div
+                                class="flex justify-between items-center p-3 bg-dark-700 rounded-lg border border-dark-600">
+                                <span class="text-gray-400">Contract Size</span>
+                                <span class="text-white font-medium" id="contractSize">1 Lot</span>
+                            </div>
+                            <div
+                                class="flex justify-between items-center p-3 bg-dark-700 rounded-lg border border-dark-600">
+                                <span class="text-gray-400">Margin Required</span>
+                                <span class="text-white font-medium" id="marginRequired">N/A (Synthetic)</span>
+                            </div>
+                            <div
+                                class="flex justify-between items-center p-3 bg-dark-700 rounded-lg border border-dark-600">
+                                <span class="text-gray-400">Swap Long/Short</span>
+                                <span class="text-white font-medium" id="swapInfo">None</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-dark-800 border-t border-dark-700 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center mb-2">
+                        <div class="w-6 h-6 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
+                            <i class="fas fa-robot text-white text-xs"></i>
+                        </div>
+                        <span class="text-lg font-bold text-white">AlgoCDK</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">&copy; 2025 AlgoCDK. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Terms</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Deriv API configuration
+        const APP_ID = '1089'; // Replace with your App ID from app.deriv.com
+        const WS_URL = `wss://ws.derivws.com/websockets/v3?app_id=${APP_ID}`;
+
+        // Market data configuration
+        const marketData = {
+            forex: [
+                { symbol: 'frxEURUSD', display: 'EUR/USD', name: 'Euro vs US Dollar', pip: 0.0001 },
+                { symbol: 'frxGBPUSD', display: 'GBP/USD', name: 'British Pound vs US Dollar', pip: 0.0001 },
+                { symbol: 'frxUSDJPY', display: 'USD/JPY', name: 'US Dollar vs Japanese Yen', pip: 0.01 },
+                { symbol: 'frxUSDCHF', display: 'USD/CHF', name: 'US Dollar vs Swiss Franc', pip: 0.0001 },
+                { symbol: 'frxAUDUSD', display: 'AUD/USD', name: 'Australian Dollar vs US Dollar', pip: 0.0001 }
+            ],
+            cryptocurrency: [
+                { symbol: 'cryBTCUSD', display: 'BTC/USD', name: 'Bitcoin vs US Dollar', pip: 1 },
+                { symbol: 'cryETHUSD', display: 'ETH/USD', name: 'Ethereum vs US Dollar', pip: 0.01 },
+                { symbol: 'cryLTCUSD', display: 'LTC/USD', name: 'Litecoin vs US Dollar', pip: 0.01 },
+                { symbol: 'cryXRPUSD', display: 'XRP/USD', name: 'Ripple vs US Dollar', pip: 0.0001 }
+            ],
+            indices: [
+                { symbol: 'inUS100', display: 'US_100', name: 'US Tech 100 Index', pip: 1 },
+                { symbol: 'inUS30', display: 'US_30', name: 'Wall Street 30 Index', pip: 1 },
+                { symbol: 'inUS500', display: 'US_500', name: 'US 500 Index', pip: 0.1 },
+                { symbol: 'inUK100', display: 'UK_100', name: 'UK 100 Index', pip: 1 }
+            ],
+            commodities: [
+                { symbol: 'cmdXAUUSD', display: 'XAU/USD', name: 'Gold vs US Dollar', pip: 0.01 },
+                { symbol: 'cmdXAGUSD', display: 'XAG/USD', name: 'Silver vs US Dollar', pip: 0.001 },
+                { symbol: 'cmdOILUSD', display: 'CL/USD', name: 'Crude Oil (WTI)', pip: 0.01 }
+            ],
+            volatility: [
+                { symbol: 'R_10', display: 'Volatility 10 Index', name: 'Volatility 10 Index', pip: 0.01 },
+                { symbol: 'R_25', display: 'Volatility 25 Index', name: 'Volatility 25 Index', pip: 0.01 },
+                { symbol: 'R_50', display: 'Volatility 50 Index', name: 'Volatility 50 Index', pip: 0.01 },
+                { symbol: 'R_75', display: 'Volatility 75 Index', name: 'Volatility 75 Index', pip: 0.01 },
+                { symbol: 'R_100', display: 'Volatility 100 Index', name: 'Volatility 100 Index', pip: 0.01 }
+            ]
+        };
+
+        // DOM Elements
+        const marketSelect = document.getElementById('marketSelect');
+        const symbolSelect = document.getElementById('symbolSelect');
+        const timeframeSelect = document.getElementById('timeframeSelect');
+        const chartTitle = document.getElementById('chartTitle');
+        const currentPrice = document.getElementById('currentPrice');
+        const priceChange = document.getElementById('priceChange');
+        const openPrice = document.getElementById('openPrice');
+        const highPrice = document.getElementById('highPrice');
+        const lowPrice = document.getElementById('lowPrice');
+        const volume = document.getElementById('volume');
+        const connectionStatus = document.getElementById('connectionStatus');
+        const chartTypeBtn = document.getElementById('chartTypeBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+        const spreadInfo = document.getElementById('spreadInfo');
+        const contractSize = document.getElementById('contractSize');
+        const marginRequired = document.getElementById('marginRequired');
+        const swapInfo = document.getElementById('swapInfo');
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userDropdown = document.getElementById('userDropdown');
+
+        // Chart variables
+        let priceChart;
+        let chartType = 'line';
+        let currentSymbol = localStorage.getItem('currentSymbol') || 'R_75';
+        let currentMarket = localStorage.getItem('currentMarket') || 'volatility';
+        let currentTimeframe = localStorage.getItem('currentTimeframe') || '15';
+        let isConnected = false;
+        let chartData = JSON.parse(localStorage.getItem(`chartData_${currentSymbol}`)) || [];
+        let ws;
+        let currentSubscriptionId = null;
+        let isFetching = false;
+        let useFallback = false;
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function () {
+            marketSelect.value = currentMarket;
+            timeframeSelect.value = currentTimeframe;
+            updateSymbolSelect();
+            symbolSelect.value = currentSymbol;
+            updateMarketInfo();
+            initializeChart();
+            connectWebSocket();
+            setupEventListeners();
+        });
+
+        // Set up event listeners
+        function setupEventListeners() {
+            marketSelect.addEventListener('change', function () {
+                currentMarket = this.value;
+                localStorage.setItem('currentMarket', currentMarket);
+                updateSymbolSelect();
+                updateMarketInfo();
+                if (currentSymbol !== symbolSelect.value) {
+                    currentSymbol = symbolSelect.value;
+                    localStorage.setItem('currentSymbol', currentSymbol);
+                    chartData = JSON.parse(localStorage.getItem(`chartData_${currentSymbol}`)) || [];
+                    resetChart();
+                    subscribeToTicks();
+                }
+            });
+
+            symbolSelect.addEventListener('change', function () {
+                currentSymbol = this.value;
+                localStorage.setItem('currentSymbol', currentSymbol);
+                chartData = JSON.parse(localStorage.getItem(`chartData_${currentSymbol}`)) || [];
+                updateMarketInfo();
+                resetChart();
+                subscribeToTicks();
+            });
+
+            timeframeSelect.addEventListener('change', function () {
+                currentTimeframe = this.value;
+                localStorage.setItem('currentTimeframe', currentTimeframe);
+                chartData = JSON.parse(localStorage.getItem(`chartData_${currentSymbol}`)) || [];
+                resetChart();
+                subscribeToTicks();
+            });
+
+            chartTypeBtn.addEventListener('click', function () {
+                toggleChartType();
+            });
+
+            fullscreenBtn.addEventListener('click', function () {
+                toggleFullscreen();
+            });
+
+            userMenuButton.addEventListener('click', function () {
+                userDropdown.classList.toggle('hidden');
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                    userDropdown.classList.add('hidden');
+                }
+            });
+        }
+
+        // Update symbol select based on market
+        function updateSymbolSelect() {
+            symbolSelect.innerHTML = '';
+            marketData[currentMarket].forEach(symbol => {
+                const option = document.createElement('option');
+                option.value = symbol.symbol;
+                option.textContent = symbol.display;
+                symbolSelect.appendChild(option);
+            });
+            if (!marketData[currentMarket].some(s => s.symbol === currentSymbol)) {
+                currentSymbol = marketData[currentMarket][0].symbol;
+                localStorage.setItem('currentSymbol', currentSymbol);
+            }
+            symbolSelect.value = currentSymbol;
+        }
+
+        // Update market information
+        function updateMarketInfo() {
+            const symbolInfo = marketData[currentMarket].find(s => s.symbol === currentSymbol);
+            if (symbolInfo) {
+                chartTitle.textContent = `${symbolInfo.name} - Real-Time Chart`;
+                spreadInfo.textContent = currentMarket === 'volatility' ? 'Variable' : 'N/A';
+                contractSize.textContent = currentMarket === 'volatility' ? '1 Lot' : 'N/A';
+                marginRequired.textContent = currentMarket === 'volatility' ? 'N/A (Synthetic)' : 'N/A';
+                swapInfo.textContent = currentMarket === 'volatility' ? 'None' : 'N/A';
+            }
+        }
+
+        // Initialize the chart
+        function initializeChart() {
+            if (priceChart) priceChart.destroy();
+            const ctx = document.getElementById('priceChart').getContext('2d');
+            priceChart = new Chart(ctx, {
+                type: chartType === 'candlestick' ? 'candlestick' : 'line',
+                data: {
+                    datasets: [{
+                        label: marketData[currentMarket].find(s => s.symbol === currentSymbol).display,
+                        data: chartData,
+                        borderColor: '#ff4500',
+                        backgroundColor: 'rgba(255, 69, 0, 0.1)',
+                        borderWidth: 2,
+                        fill: chartType === 'line' ? true : false,
+                        tension: chartType === 'line' ? 0.1 : 0,
+                        pointRadius: chartType === 'line' ? 0 : 3,
+                        pointHoverRadius: chartType === 'line' ? 4 : 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        intersect: false,
+                        mode: 'index'
+                    },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: 'index',
+                            intersect: false,
+                            backgroundColor: 'rgba(26, 26, 26, 0.9)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            borderColor: '#333333',
+                            borderWidth: 1,
+                            displayColors: false,
+                            callbacks: {
+                                label: function (context) {
+                                    if (chartType === 'candlestick') {
+                                        const data = context.raw;
+                                        return `Open: ${data.o.toFixed(5)}, High: ${data.h.toFixed(5)}, Low: ${data.l.toFixed(5)}, Close: ${data.c.toFixed(5)}`;
+                                    }
+                                    return `Price: ${context.parsed.y.toFixed(5)}`;
+                                }
+                            }
+                        },
+                        zoom: {
+                            pan: {
+                                enabled: true,
+                                mode: 'x',
+                                onPan: ({ chart }) => {
+                                    const xScale = chart.scales.x;
+                                    if (xScale.min <= 0 && chartData.length && !isFetching) {
+                                        fetchHistoricalData();
+                                    }
+                                }
+                            },
+                            limits: { x: { min: 'original', max: 'original' } }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            type: 'linear',
+                            display: true,
+                            title: { display: true, text: 'Time', color: 'rgba(255, 255, 255, 0.7)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)', drawBorder: false },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)',
+                                callback: function (value) {
+                                    const date = new Date(value);
+                                    return date.toLocaleTimeString();
+                                }
+                            }
+                        },
+                        y: {
+                            display: true,
+                            title: { display: true, text: 'Price', color: 'rgba(255, 255, 255, 0.7)' },
+                            grid: { color: 'rgba(255, 255, 255, 0.1)', drawBorder: false },
+                            ticks: { color: 'rgba(255, 255, 255, 0.7)' }
+                        }
+                    }
+                }
+            });
+            updatePriceInfo(chartData);
+        }
+
+        // Connect to Deriv WebSocket
+        function connectWebSocket(retryCount = 0) {
+            ws = new WebSocket(WS_URL);
+            ws.onopen = function () {
+                isConnected = true;
+                connectionStatus.textContent = 'Connected';
+                connectionStatus.className = 'market-open text-xs font-medium px-2 py-1 rounded border';
+                console.log('WebSocket connected successfully');
+                subscribeToTicks();
+            };
+
+            ws.onmessage = function (event) {
+                const data = JSON.parse(event.data);
+                if (data.error) {
+                    console.error('WebSocket Error:', data.error);
+                    handleConnectionError(data.error.message);
+                    return;
+                }
+                if (data.msg_type === 'tick') {
+                    updateChartWithTick(data.tick);
+                } else if (data.msg_type === 'history') {
+                    initializeChartWithHistory(data.history);
+                } else if (data.msg_type === 'ohlc') {
+                    updateChartWithOHLC(data.ohlc);
+                }
+                storeSubscriptionId(data);
+            };
+
+            ws.onerror = function (error) {
+                console.error('WebSocket Error:', error);
+                handleConnectionError('WebSocket connection error');
+            };
+
+            ws.onclose = function (event) {
+                console.log(`WebSocket closed: code=${event.code}, reason=${event.reason}`);
+                handleConnectionError('WebSocket closed');
+                if (retryCount < 3) {
+                    setTimeout(() => connectWebSocket(retryCount + 1), 2000 * (retryCount + 1));
+                } else {
+                    console.log('Max retries reached. Using simulated data.');
+                    useFallback = true;
+                    initializeFallbackData();
+                }
+            };
+        }
+
+        // Map timeframe to valid granularity
+        function getGranularity() {
+            const timeframes = {
+                '1': 60,
+                '5': 300,
+                '15': 900,
+                '60': 3600,
+                '240': 14400,
+                'D': 86400
+            };
+            return chartType === 'candlestick' ? timeframes[currentTimeframe] || 900 : 0;
+        }
+
+        // Subscribe to tick updates
+        function subscribeToTicks() {
+            if (!ws || !isConnected || useFallback || ws.readyState !== WebSocket.OPEN) return;
+            if (currentSubscriptionId) {
+                ws.send(JSON.stringify({ forget: currentSubscriptionId }));
+            }
+            const request = {
+                ticks_history: currentSymbol,
+                end: 'latest',
+                count: 100,
+                style: chartType === 'candlestick' ? 'candles' : 'ticks',
+                subscribe: 1
+            };
+            const granularity = getGranularity();
+            if (granularity > 0) {
+                request.granularity = granularity;
+            }
+            console.log('Sending WebSocket request:', request);
+            ws.send(JSON.stringify(request));
+        }
+
+        // Fetch historical data for panning
+        function fetchHistoricalData() {
+            if (isFetching || useFallback || !ws || !isConnected || ws.readyState !== WebSocket.OPEN) {
+                if (useFallback) {
+                    isFetching = true;
+                    const earliestEpoch = chartData.length ? Math.min(...chartData.map(d => d.x)) / 1000 : Math.floor(Date.now() / 1000);
+                    for (let i = 0; i < 100; i++) {
+                        const epoch = earliestEpoch - (100 - i) * 5;
+                        const lastPrice = chartData.length ? chartData[0].y : 12345.2;
+                        const price = Math.round((lastPrice + (Math.random() - 0.5) * 10) * 10) / 10;
+                        chartData.unshift({ x: epoch * 1000, y: price });
+                    }
+                    updateChart();
+                    isFetching = false;
+                }
+                return;
+            }
+            isFetching = true;
+            const earliestEpoch = chartData.length ? Math.min(...chartData.map(d => d.x)) / 1000 : Math.floor(Date.now() / 1000);
+            const request = {
+                ticks_history: currentSymbol,
+                end: Math.floor(earliestEpoch - 1),
+                count: 100,
+                style: chartType === 'candlestick' ? 'candles' : 'ticks'
+            };
+            const granularity = getGranularity();
+            if (granularity > 0) {
+                request.granularity = granularity;
+            }
+            console.log('Fetching historical data:', request);
+            ws.send(JSON.stringify(request));
+        }
+
+        // Store subscription ID
+        function storeSubscriptionId(data) {
+            if (data.subscription && data.subscription.id) {
+                currentSubscriptionId = data.subscription.id;
+            }
+        }
+
+        // Initialize chart with historical data
+        function initializeChartWithHistory(history) {
+            chartData = [];
+            if (history.prices && history.times) {
+                if (chartType === 'candlestick') {
+                    for (let i = 0; i < history.prices.length; i++) {
+                        chartData.push({
+                            x: history.times[i] * 1000,
+                            o: history.prices[i].open,
+                            h: history.prices[i].high,
+                            l: history.prices[i].low,
+                            c: history.prices[i].close
+                        });
+                    }
+                } else {
+                    for (let i = 0; i < history.prices.length; i++) {
+                        chartData.push({
+                            x: history.times[i] * 1000,
+                            y: history.prices[i]
+                        });
+                    }
+                }
+            }
+            localStorage.setItem(`chartData_${currentSymbol}`, JSON.stringify(chartData));
+            priceChart.data.datasets[0].data = chartData;
+            priceChart.update();
+            updatePriceInfo(chartData);
+        }
+
+        // Update chart with OHLC data (for candlesticks)
+        function updateChartWithOHLC(ohlc) {
+            if (!priceChart || !ohlc || chartType !== 'candlestick') return;
+            const newDataPoint = {
+                x: ohlc.epoch * 1000,
+                o: ohlc.open,
+                h: ohlc.high,
+                l: ohlc.low,
+                c: ohlc.close
+            };
+            chartData.push(newDataPoint);
+            if (chartData.length > 200) chartData.shift();
+            localStorage.setItem(`chartData_${currentSymbol}`, JSON.stringify(chartData));
+            priceChart.data.datasets[0].data = chartData;
+            priceChart.update();
+            updatePriceInfo(chartData);
+        }
+
+        // Initialize fallback data
+        function initializeFallbackData() {
+            if (chartData.length === 0) {
+                let currentEpoch = Math.floor(Date.now() / 1000) - 100 * 5;
+                for (let i = 0; i < 100; i++) {
+                    const price = Math.round((12345.2 + (Math.random() - 0.5) * 100) * 10) / 10;
+                    chartData.push({ x: currentEpoch * 1000, y: price });
+                    currentEpoch += 5;
+                }
+            }
+            localStorage.setItem(`chartData_${currentSymbol}`, JSON.stringify(chartData));
+            priceChart.data.datasets[0].data = chartData;
+            priceChart.update();
+            updatePriceInfo(chartData);
+            setInterval(() => {
+                if (useFallback) {
+                    const lastEpoch = chartData.length ? chartData[chartData.length - 1].x / 1000 : Math.floor(Date.now() / 1000);
+                    const lastPrice = chartData.length ? chartData[chartData.length - 1].y : 12345.2;
+                    const newPrice = Math.round((lastPrice + (Math.random() - 0.5) * 10) * 10) / 10;
+                    chartData.push({ x: (lastEpoch + 5) * 1000, y: newPrice });
+                    if (chartData.length > 200) chartData.shift();
+                    updateChart();
+                }
+            }, 5000);
+        }
+
+        // Update chart
+        function updateChart() {
+            priceChart.data.datasets[0].data = chartData;
+            priceChart.data.datasets[0].label = marketData[currentMarket].find(s => s.symbol === currentSymbol).display;
+            priceChart.options.plugins.title = {
+                display: true,
+                text: `${marketData[currentMarket].find(s => s.symbol === currentSymbol).name} - Real-Time Chart ${useFallback ? '(Simulated)' : ''}`,
+                color: 'rgba(255, 255, 255, 0.7)'
+            };
+            priceChart.update();
+            updatePriceInfo(chartData);
+        }
+
+        // Update chart with new tick
+        function updateChartWithTick(tick) {
+            if (!priceChart || !tick || chartType === 'candlestick') return;
+            const newDataPoint = {
+                x: tick.epoch * 1000,
+                y: tick.quote
+            };
+            chartData.push(newDataPoint);
+            if (chartData.length > 200) chartData.shift();
+            localStorage.setItem(`chartData_${currentSymbol}`, JSON.stringify(chartData));
+            priceChart.data.datasets[0].data = chartData;
+            priceChart.update();
+            updatePriceInfo(chartData);
+        }
+
+        // Update price information
+        function updatePriceInfo(data) {
+            if (data.length === 0) return;
+            const symbolInfo = marketData[currentMarket].find(s => s.symbol === currentSymbol);
+            const pip = symbolInfo ? symbolInfo.pip : 0.01;
+            const latestPrice = chartType === 'candlestick' ? data[data.length - 1].c : data[data.length - 1].y;
+            const openPriceValue = chartType === 'candlestick' ? data[0].o : data[0].y;
+            const highPriceValue = chartType === 'candlestick' ? Math.max(...data.map(d => d.h)) : Math.max(...data.map(d => d.y));
+            const lowPriceValue = chartType === 'candlestick' ? Math.min(...data.map(d => d.l)) : Math.min(...data.map(d => d.y));
+            const change = latestPrice - openPriceValue;
+            const changePercent = (change / openPriceValue) * 100;
+
+            currentPrice.textContent = latestPrice.toFixed(pip.toString().length - 2);
+            openPrice.textContent = openPriceValue.toFixed(pip.toString().length - 2);
+            highPrice.textContent = highPriceValue.toFixed(pip.toString().length - 2);
+            lowPrice.textContent = lowPriceValue.toFixed(pip.toString().length - 2);
+            volume.textContent = 'N/A';
+
+            if (change >= 0) {
+                priceChange.innerHTML = `<i class="fas fa-arrow-up mr-1"></i> +${change.toFixed(pip.toString().length - 2)} (${changePercent.toFixed(2)}%)`;
+                priceChange.className = 'price-up text-sm font-medium flex items-center';
+            } else {
+                priceChange.innerHTML = `<i class="fas fa-arrow-down mr-1"></i> ${change.toFixed(pip.toString().length - 2)} (${changePercent.toFixed(2)}%)`;
+                priceChange.className = 'price-down text-sm font-medium flex items-center';
+            }
+        }
+
+        // Handle connection error
+        function handleConnectionError(message) {
+            isConnected = false;
+            connectionStatus.textContent = 'Reconnecting...';
+            connectionStatus.className = 'market-closed text-xs font-medium px-2 py-1 rounded border';
+            console.error(`Connection error: ${message}`);
+            if (message.includes('granularity')) {
+                alert('Invalid timeframe for candlestick chart. Switching to line chart.');
+                chartType = 'line';
+                chartTypeBtn.innerHTML = '<i class="fas fa-chart-bar mr-2"></i> Candlestick';
+                resetChart();
+                subscribeToTicks();
+            }
+        }
+
+        // Toggle chart type
+        function toggleChartType() {
+            chartType = chartType === 'line' ? 'candlestick' : 'line';
+            chartTypeBtn.innerHTML = chartType === 'line' ? '<i class="fas fa-chart-bar mr-2"></i> Candlestick' : '<i class="fas fa-chart-line mr-2"></i> Line Chart';
+            priceChart.destroy();
+            initializeChart();
+            subscribeToTicks();
+        }
+
+        // Toggle fullscreen
+        function toggleFullscreen() {
+            const chartContainer = document.querySelector('.chart-container');
+            if (!document.fullscreenElement) {
+                if (chartContainer.requestFullscreen) {
+                    chartContainer.requestFullscreen();
+                } else if (chartContainer.webkitRequestFullscreen) {
+                    chartContainer.webkitRequestFullscreen();
+                } else if (chartContainer.msRequestFullscreen) {
+                    chartContainer.msRequestFullscreen();
+                }
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i>';
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+            }
+        }
+
+        // Reset chart
+        function resetChart() {
+            if (priceChart) {
+                priceChart.destroy();
+                initializeChart();
+            }
+        }
+
+        // Handle fullscreen change
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
+
+        function handleFullscreenChange() {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.mozFullScreenElement && !document.msFullscreenElement) {
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i>';
+            }
+        }
+    </script>
+</body>
+
+</html>

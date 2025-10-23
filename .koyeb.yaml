@@ -1,0 +1,13 @@
+name: algocdk-backend
+services:
+  - name: api
+    dockerfile: Dockerfile
+    ports:
+      - port: 8080
+        protocol: http
+    env:
+      - key: GIN_MODE
+        value: release
+    volumes:
+      - name: sqlite-storage
+        mount_path: /app/data

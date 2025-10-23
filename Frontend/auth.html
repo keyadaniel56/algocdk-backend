@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoCDK | Automate your success</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff0f0',
+                            100: '#ffd6d6',
+                            500: '#ff4500',
+                            600: '#e63e00',
+                            700: '#cc3700',
+                        },
+                        dark: {
+                            900: '#000000',
+                            800: '#1a1a1a',
+                            700: '#333333',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #ff4500, #ff6b35);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <!-- Background Elements -->
+    <div class="absolute inset-0 overflow-hidden">
+        <!-- Animated Background Elements -->
+        <div class="absolute top-10 left-10 w-20 h-20 rounded-full bg-orange-500/10 animate-pulse"></div>
+        <div class="absolute top-1/4 right-20 w-16 h-16 rounded-full bg-red-500/10 animate-pulse-slow"></div>
+        <div class="absolute bottom-20 left-1/4 w-24 h-24 rounded-full bg-orange-600/10 animate-float"></div>
+        <div class="absolute bottom-10 right-10 w-12 h-12 rounded-full bg-red-600/10 animate-pulse"></div>
+
+        <!-- Grid Pattern -->
+        <div class="absolute inset-0 opacity-10" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), 
+                    linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px);
+                    background-size: 50px 50px;">
+        </div>
+    </div>
+
+    <div class="glass-effect rounded-2xl shadow-2xl p-8 w-full max-w-md relative z-10">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold gradient-text">Algocdk</h1>
+            <p class="text-gray-300 mt-2">Automate your success</p>
+        </div>
+
+        <!-- Tabs for Login / Signup -->
+        <div class="flex mb-6 rounded-lg bg-dark-800 p-1">
+            <button id="loginTab"
+                class="flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-300 bg-primary-500 text-white">
+                Login
+            </button>
+            <button id="signupTab"
+                class="flex-1 py-2 px-4 rounded-lg font-medium transition-all duration-300 text-gray-400 hover:text-white">
+                Signup
+            </button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="space-y-4">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-envelope text-gray-500"></i>
+                </div>
+                <input type="email" id="loginEmail" placeholder="Email"
+                    class="w-full pl-10 pr-4 py-3 rounded-lg bg-dark-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    required>
+            </div>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-lock text-gray-500"></i>
+                </div>
+                <input type="password" id="loginPassword" placeholder="Password"
+                    class="w-full pl-10 pr-4 py-3 rounded-lg bg-dark-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    required>
+            </div>
+            <div class="flex items-center justify-between text-sm">
+                <label class="flex items-center text-gray-400">
+                    <input type="checkbox"
+                        class="rounded bg-gray-700 border-gray-600 text-primary-500 focus:ring-primary-500">
+                    <span class="ml-2">Remember me</span>
+                </label>
+                <a href="#" class="text-primary-500 hover:text-primary-400 transition-colors">Forgot password?</a>
+            </div>
+            <button type="submit" id="loginButton"
+                class="w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-red-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 flex items-center justify-center">
+                <span id="loginButtonText">Login</span>
+                <div id="loginSpinner" class="hidden ml-2">
+                    <i class="fas fa-circle-notch animate-spin"></i>
+                </div>
+            </button>
+        </form>
+
+        <!-- Signup Form -->
+        <form id="signupForm" class="space-y-4 hidden">
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-user text-gray-500"></i>
+                </div>
+                <input type="text" id="signupName" placeholder="Full Name"
+                    class="w-full pl-10 pr-4 py-3 rounded-lg bg-dark-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    required>
+            </div>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-envelope text-gray-500"></i>
+                </div>
+                <input type="email" id="signupEmail" placeholder="Email"
+                    class="w-full pl-10 pr-4 py-3 rounded-lg bg-dark-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    required>
+            </div>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-lock text-gray-500"></i>
+                </div>
+                <input type="password" id="signupPassword" placeholder="Password"
+                    class="w-full pl-10 pr-4 py-3 rounded-lg bg-dark-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    required>
+            </div>
+            <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="fas fa-lock text-gray-500"></i>
+                </div>
+                <input type="password" id="signupConfirmPassword" placeholder="Confirm Password"
+                    class="w-full pl-10 pr-4 py-3 rounded-lg bg-dark-800 border border-gray-700 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                    required>
+            </div>
+            <div class="flex items-center text-sm">
+                <label class="flex items-center text-gray-400">
+                    <input type="checkbox"
+                        class="rounded bg-gray-700 border-gray-600 text-primary-500 focus:ring-primary-500" required>
+                    <span class="ml-2">I agree to the <a href="terms"
+                            class="text-primary-500 hover:text-primary-400 transition-colors">Terms of Service</a> and
+                        <a href="privacy" class="text-primary-500 hover:text-primary-400 transition-colors">Privacy
+                            Policy</a></span>
+                </label>
+            </div>
+            <button type="submit" id="signupButton"
+                class="w-full py-3 px-4 bg-gradient-to-r from-primary-500 to-red-600 text-white rounded-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-opacity-50 flex items-center justify-center">
+                <span id="signupButtonText">Create Account</span>
+                <div id="signupSpinner" class="hidden ml-2">
+                    <i class="fas fa-circle-notch animate-spin"></i>
+                </div>
+            </button>
+        </form>
+
+        <!-- Message Display -->
+        <div id="message" class="mt-4 p-3 rounded-lg hidden"></div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginTab = document.getElementById('loginTab');
+        const signupTab = document.getElementById('signupTab');
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const messageDiv = document.getElementById('message');
+
+        // Form elements
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+        const loginButton = document.getElementById('loginButton');
+        const loginButtonText = document.getElementById('loginButtonText');
+        const loginSpinner = document.getElementById('loginSpinner');
+
+        const signupName = document.getElementById('signupName');
+        const signupEmail = document.getElementById('signupEmail');
+        const signupPassword = document.getElementById('signupPassword');
+        const signupConfirmPassword = document.getElementById('signupConfirmPassword');
+        const signupButton = document.getElementById('signupButton');
+        const signupButtonText = document.getElementById('signupButtonText');
+        const signupSpinner = document.getElementById('signupSpinner');
+
+        // State
+        let activeTab = 'login';
+        let loading = false;
+
+        // Tab switching
+        loginTab.addEventListener('click', () => switchTab('login'));
+        signupTab.addEventListener('click', () => switchTab('signup'));
+
+        function switchTab(tab) {
+            if (loading) return;
+
+            activeTab = tab;
+
+            // Update tab styles
+            if (tab === 'login') {
+                loginTab.classList.remove('text-gray-400', 'hover:text-white');
+                loginTab.classList.add('bg-primary-500', 'text-white');
+                signupTab.classList.remove('bg-primary-500', 'text-white');
+                signupTab.classList.add('text-gray-400', 'hover:text-white');
+
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            } else {
+                signupTab.classList.remove('text-gray-400', 'hover:text-white');
+                signupTab.classList.add('bg-primary-500', 'text-white');
+                loginTab.classList.remove('bg-primary-500', 'text-white');
+                loginTab.classList.add('text-gray-400', 'hover:text-white');
+
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+
+            // Clear any messages
+            hideMessage();
+        }
+
+        // Form submissions
+        loginForm.addEventListener('submit', handleLogin);
+        signupForm.addEventListener('submit', handleSignup);
+
+        async function handleLogin(e) {
+            e.preventDefault();
+
+            if (loading) return;
+
+            const email = loginEmail.value.trim();
+            const password = loginPassword.value.trim();
+
+            if (!email || !password) {
+                showMessage('All fields are required', 'error');
+                return;
+            }
+
+            setLoading(true, 'login');
+            hideMessage();
+
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || data.message || 'Login failed');
+                }
+
+                // Save token & redirect based on role
+                localStorage.setItem('token', data.token);
+                const role = data.role.toLowerCase();
+
+                showMessage('Login successful! Redirecting...', 'success');
+
+                // Redirect based on role
+                setTimeout(() => {
+                    if (role === 'superadmin') {
+                        window.location.href = '/superadmin';
+                    } else if (role === 'admin' || role==='Admin') {
+                        window.location.href = '/admin';
+                    } else {
+                        window.location.href = '/algocdk';
+                    }
+                }, 1500);
+
+            } catch (error) {
+                showMessage(error.message, 'error');
+            } finally {
+                setLoading(false, 'login');
+            }
+        }
+
+        async function handleSignup(e) {
+            e.preventDefault();
+
+            if (loading) return;
+
+            const name = signupName.value.trim();
+            const email = signupEmail.value.trim();
+            const password = signupPassword.value.trim();
+            const confirmPassword = signupConfirmPassword.value.trim();
+
+            if (!name || !email || !password || !confirmPassword) {
+                showMessage('All fields are required', 'error');
+                return;
+            }
+
+            if (password !== confirmPassword) {
+                showMessage('Passwords do not match', 'error');
+                return;
+            }
+
+            setLoading(true, 'signup');
+            hideMessage();
+
+            try {
+                const response = await fetch('http://localhost:8080/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.error || data.message || 'Signup failed');
+                }
+
+                showMessage('Signup successful! Please login.', 'success');
+
+                // Clear form and switch to login
+                signupName.value = '';
+                signupEmail.value = '';
+                signupPassword.value = '';
+                signupConfirmPassword.value = '';
+
+                setTimeout(() => {
+                    switchTab('login');
+                }, 2000);
+
+            } catch (error) {
+                showMessage(error.message, 'error');
+            } finally {
+                setLoading(false, 'signup');
+            }
+        }
+
+        // Utility functions
+        function setLoading(isLoading, formType) {
+            loading = isLoading;
+
+            if (formType === 'login') {
+                if (isLoading) {
+                    loginButton.disabled = true;
+                    loginButtonText.textContent = 'Logging in...';
+                    loginSpinner.classList.remove('hidden');
+                } else {
+                    loginButton.disabled = false;
+                    loginButtonText.textContent = 'Login';
+                    loginSpinner.classList.add('hidden');
+                }
+            } else {
+                if (isLoading) {
+                    signupButton.disabled = true;
+                    signupButtonText.textContent = 'Creating account...';
+                    signupSpinner.classList.remove('hidden');
+                } else {
+                    signupButton.disabled = false;
+                    signupButtonText.textContent = 'Create Account';
+                    signupSpinner.classList.add('hidden');
+                }
+            }
+        }
+
+        function showMessage(text, type) {
+            messageDiv.textContent = text;
+            messageDiv.classList.remove('hidden');
+
+            if (type === 'success') {
+                messageDiv.classList.remove('bg-red-500/20', 'text-red-400', 'border-red-500/30');
+                messageDiv.classList.add('bg-green-500/20', 'text-green-400', 'border', 'border-green-500/30');
+            } else {
+                messageDiv.classList.remove('bg-green-500/20', 'text-green-400', 'border-green-500/30');
+                messageDiv.classList.add('bg-red-500/20', 'text-red-400', 'border', 'border-red-500/30');
+            }
+        }
+
+        function hideMessage() {
+            messageDiv.classList.add('hidden');
+        }
+    </script>
+</body>
+
+</html>

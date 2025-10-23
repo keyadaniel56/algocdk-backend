@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy - Algocdk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff0f0',
+                            100: '#ffd6d6',
+                            500: '#ff4500',
+                            600: '#e63e00',
+                            700: '#cc3700',
+                        },
+                        dark: {
+                            900: '#000000',
+                            800: '#1a1a1a',
+                            700: '#333333',
+                            600: '#4d4d4d',
+                        },
+                        success: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff4500;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e63e00;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .content-section {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-dark-800 border-b border-dark-700">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="/" class="text-2xl font-bold text-primary-500">
+                    Algocdk
+                </a>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="index" class="text-gray-400 hover:text-white transition-colors">Dashboard</a>
+                    <a href="terms" class="text-gray-400 hover:text-white transition-colors">Terms</a>
+                    <a href="privacy" class="text-primary-500 font-medium">Privacy</a>
+                    <a href="support" class="text-gray-400 hover:text-white transition-colors">Support</a>
+                </nav>
+                <button class="md:hidden text-gray-400">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-10 fade-in">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <h1 class="text-4xl font-bold text-white mb-4">Privacy Policy</h1>
+                <p class="text-gray-400 text-lg">Effective Date: October 20, 2025</p>
+            </div>
+
+            <div class="bg-dark-800 rounded-xl border border-dark-700 p-8 content-section">
+                <section class="space-y-8">
+                    <div>
+                        <p class="text-gray-300">At <strong class="text-primary-500">Algocdk</strong>, your privacy is
+                            very important to us. This Privacy Policy explains how we collect, use, and protect your
+                            personal data when you use our platform, services, and tools.</p>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">1. Information We Collect</h2>
+                        <p class="text-gray-300 mb-4">We collect information to provide and improve our services. The
+                            data we collect includes:</p>
+                        <ul class="space-y-3">
+                            <li class="flex items-start">
+                                <i class="fas fa-user-circle text-primary-500 mt-1 mr-3"></i>
+                                <div>
+                                    <strong class="text-white">Account Information:</strong>
+                                    <span class="text-gray-300"> Name, email, and contact details provided during
+                                        registration.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-chart-line text-primary-500 mt-1 mr-3"></i>
+                                <div>
+                                    <strong class="text-white">Usage Data:</strong>
+                                    <span class="text-gray-300"> Interactions with bots, trades, and preferences to
+                                        improve the platform experience.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-laptop text-primary-500 mt-1 mr-3"></i>
+                                <div>
+                                    <strong class="text-white">Device Data:</strong>
+                                    <span class="text-gray-300"> Browser type, operating system, and IP address for
+                                        security and analytics.</span>
+                                </div>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fas fa-exchange-alt text-primary-500 mt-1 mr-3"></i>
+                                <div>
+                                    <strong class="text-white">Third-Party Data:</strong>
+                                    <span class="text-gray-300"> Information shared from integrated services such as
+                                        Deriv or Paystack (if applicable).</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">2. How We Use Your Information</h2>
+                        <p class="text-gray-300 mb-4">We use collected information to:</p>
+                        <ul class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-success-500 mr-2"></i>
+                                <span class="text-gray-300">Provide and improve Algocdk features and services</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-success-500 mr-2"></i>
+                                <span class="text-gray-300">Authenticate users and secure accounts</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-success-500 mr-2"></i>
+                                <span class="text-gray-300">Process transactions, hosting, or bot-related
+                                    services</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-success-500 mr-2"></i>
+                                <span class="text-gray-300">Send updates, system alerts, or important account
+                                    notifications</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check text-success-500 mr-2"></i>
+                                <span class="text-gray-300">Comply with legal obligations or prevent fraud</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">3. Data Protection</h2>
+                        <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                            <div class="flex items-start">
+                                <i class="fas fa-shield-alt text-primary-500 text-xl mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-gray-300">We apply strict security measures to safeguard your
+                                        personal data, including encryption, firewalls, and limited data access.
+                                        However, no online system is 100% secure, and you acknowledge that you use
+                                        Algocdk at your own risk.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">4. Data Sharing and Disclosure</h2>
+                        <p class="text-gray-300 mb-4">We do <strong class="text-primary-500">not sell</strong> your
+                            personal data. We may share data only with:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600 text-center">
+                                <i class="fas fa-handshake text-primary-500 text-2xl mb-2"></i>
+                                <p class="text-gray-300">Trusted service providers who help us operate our platform</p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600 text-center">
+                                <i class="fas fa-gavel text-primary-500 text-2xl mb-2"></i>
+                                <p class="text-gray-300">Law enforcement or regulatory agencies when required by law</p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600 text-center">
+                                <i class="fas fa-plug text-primary-500 text-2xl mb-2"></i>
+                                <p class="text-gray-300">Third-party integrations only when you authorize it</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">5. Cookies and Tracking</h2>
+                        <p class="text-gray-300 mb-4">Algocdk uses cookies and similar technologies to:</p>
+                        <div class="flex flex-wrap gap-4 mb-4">
+                            <span
+                                class="px-3 py-2 bg-primary-500/20 text-primary-500 rounded-lg border border-primary-500/30 text-sm">Maintain
+                                session information</span>
+                            <span
+                                class="px-3 py-2 bg-primary-500/20 text-primary-500 rounded-lg border border-primary-500/30 text-sm">Improve
+                                user experience</span>
+                            <span
+                                class="px-3 py-2 bg-primary-500/20 text-primary-500 rounded-lg border border-primary-500/30 text-sm">Analyze
+                                usage trends</span>
+                        </div>
+                        <p class="text-gray-300">You can disable cookies in your browser settings, but some features may
+                            stop functioning properly.</p>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">6. User Rights</h2>
+                        <p class="text-gray-300 mb-4">As an Algocdk user, you have the right to:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-eye text-primary-500 mr-2"></i>
+                                    <h3 class="font-medium text-white">Access</h3>
+                                </div>
+                                <p class="text-gray-300 text-sm">Access the personal data we hold about you</p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-edit text-primary-500 mr-2"></i>
+                                    <h3 class="font-medium text-white">Correction</h3>
+                                </div>
+                                <p class="text-gray-300 text-sm">Request correction of inaccurate information</p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-trash text-primary-500 mr-2"></i>
+                                    <h3 class="font-medium text-white">Deletion</h3>
+                                </div>
+                                <p class="text-gray-300 text-sm">Request deletion of your account and personal data</p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-ban text-primary-500 mr-2"></i>
+                                    <h3 class="font-medium text-white">Withdrawal</h3>
+                                </div>
+                                <p class="text-gray-300 text-sm">Withdraw consent to data processing at any time</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">7. Data Retention</h2>
+                        <p class="text-gray-300">We retain your data for as long as your account remains active or as
+                            needed to comply with legal, regulatory, or business obligations. Once data is no longer
+                            required, it is securely deleted.</p>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">8. Third-Party Links</h2>
+                        <p class="text-gray-300">Algocdk may contain links to external websites or services. We are not
+                            responsible for the privacy practices or content of those third-party sites. Please review
+                            their policies before sharing personal data.</p>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">9. Updates to This Policy</h2>
+                        <div class="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-yellow-500 mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-gray-300">We may update this Privacy Policy periodically. When
+                                        changes occur, we will update the "Effective Date" and notify users through the
+                                        platform or email. Continued use of Algocdk after updates means you accept the
+                                        revised policy.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">10. Contact Us</h2>
+                        <p class="text-gray-300 mb-4">If you have questions or concerns about this Privacy Policy,
+                            please contact us at:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <a href="mailto:support@Algocdk.com"
+                                class="bg-dark-700 rounded-lg p-4 border border-dark-600 hover:border-primary-500 transition-colors group">
+                                <div class="flex items-center">
+                                    <i
+                                        class="fas fa-envelope text-primary-500 text-xl mr-3 group-hover:scale-110 transition-transform"></i>
+                                    <div>
+                                        <h3 class="font-medium text-white">Email Support</h3>
+                                        <p class="text-gray-400 text-sm">support@Algocdk.com</p>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="https://www.Algocdk.com" target="_blank"
+                                class="bg-dark-700 rounded-lg p-4 border border-dark-600 hover:border-primary-500 transition-colors group">
+                                <div class="flex items-center">
+                                    <i
+                                        class="fas fa-globe text-primary-500 text-xl mr-3 group-hover:scale-110 transition-transform"></i>
+                                    <div>
+                                        <h3 class="font-medium text-white">Website</h3>
+                                        <p class="text-gray-400 text-sm">www.Algocdk.com</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark-800 border-t border-dark-700 mt-16">
+        <div class="container mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-gray-400">&copy; 2025 Algocdk by CDK Technologies. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="terms" class="text-gray-400 hover:text-white transition-colors">Terms & Conditions</a>
+                    <a href="privacy" class="text-primary-500 font-medium">Privacy Policy</a>
+                    <a href="support" class="text-gray-400 hover:text-white transition-colors">Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple fade-in animation for page load
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.classList.add('fade-in');
+        });
+    </script>
+</body>
+
+</html>

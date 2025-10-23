@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>AlgoCDK Role Upgrade Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f7f7f7;
+            padding: 20px;
+        }
+
+        section {
+            background: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+
+        input,
+        button {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        button {
+            cursor: pointer;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        .card {
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        #notifications {
+            background: #e9f7ef;
+            border: 1px solid #b2dfdb;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>⚙️ AlgoCDK Role Upgrade Test</h1>
+
+    <!-- USER SIGNUP -->
+    <section>
+        <h2>📝 User Signup</h2>
+        <input id="signupEmail" placeholder="Email" type="email">
+        <input id="signupPassword" placeholder="Password" type="password">
+        <button onclick="signup()">Signup</button>
+        <p id="signupResult"></p>
+    </section>
+
+    <!-- USER LOGIN -->
+    <section>
+        <h2>🔐 User Login</h2>
+        <input id="loginEmail" placeholder="Email" type="email">
+        <input id="loginPassword" placeholder="Password" type="password">
+        <button onclick="login()">Login</button>
+        <p id="loginResult"></p>
+    </section>
+
+    <!-- REQUEST UPGRADE -->
+    <section>
+        <h2>🆙 Request Admin Upgrade</h2>
+        <button onclick="requestUpgrade()">Request Upgrade</button>
+        <p id="upgradeResult"></p>
+    </section>
+
+    <!-- SUPERADMIN LOGIN -->
+    <section>
+        <h2>👑 Superadmin Login</h2>
+        <input id="superEmail" placeholder="Email" type="email">
+        <input id="superPassword" placeholder="Password" type="password">
+        <button onclick="superLogin()">Login</button>
+        <p id="superLoginResult"></p>
+    </section>
+
+    <!-- VIEW & MANAGE PENDING REQUESTS -->
+    <section>
+        <h2>📋 Pending Upgrade Requests</h2>
+        <button onclick="fetchPending()">Refresh List</button>
+        <div id="pendingList"></div>
+    </section>
+
+    <!-- LIVE NOTIFICATIONS -->
+    <section>
+        <h2>🔔 Live Notifications</h2>
+        <div id="notifications"></div>
+    </section>
+
+    <script>
+        let userToken = "";
+        let superToken = "";
+        let userSocket = null;
+        let superSocket = null;
+        const baseURL = "http://localhost:8080/api";
+
+        // Signup
+        async function signup() {
+            const email = document.getElementById("signupEmail").value;
+            const password = document.getElementById("signupPassword").value;
+
+            const res = await fetch(`${baseURL}/auth/register`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+            document.getElementById("signupResult").innerText = JSON.stringify(data);
+        }
+
+        // Login
+        async function login() {
+            const email = document.getElementById("loginEmail").value;
+            const password = document.getElementById("loginPassword").value;
+
+            const res = await fetch(`${baseURL}/auth/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+            userToken = data.token;
+            document.getElementById("loginResult").innerText = "✅ Logged in! Token saved.";
+
+            // Connect to WebSocket for notifications
+            userSocket = new WebSocket(`ws://localhost:8080/api/user/ws?token=${userToken}`);
+            userSocket.onmessage = (msg) => {
+                const div = document.getElementById("notifications");
+                div.innerHTML += `<p>👤 User: ${msg.data}</p>`;
+            };
+        }
+
+        // Request Upgrade
+        async function requestUpgrade() {
+            const res = await fetch(`${baseURL}/user/request-upgrade`, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${userToken}` }
+            });
+
+            const data = await res.json();
+            document.getElementById("upgradeResult").innerText = JSON.stringify(data);
+        }
+
+        // SuperAdmin Login
+        async function superLogin() {
+            const email = document.getElementById("superEmail").value;
+            const password = document.getElementById("superPassword").value;
+
+            const res = await fetch(`${baseURL}/superadmin/login`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password })
+            });
+
+            const data = await res.json();
+            superToken = data.token;
+            document.getElementById("superLoginResult").innerText = "👑 Superadmin logged in!";
+
+            // Connect WebSocket
+            superSocket = new WebSocket(`ws://localhost:8080/api/superadmin/ws?token=${superToken}`);
+            superSocket.onmessage = (msg) => {
+                const div = document.getElementById("notifications");
+                div.innerHTML += `<p>👑 SuperAdmin: ${msg.data}</p>`;
+            };
+        }
+
+        // Fetch pending upgrade requests
+        async function fetchPending() {
+            const res = await fetch(`${baseURL}/superadmin/pending-requests`, {
+                method: "GET",
+                headers: { "Authorization": `Bearer ${superToken}` }
+            });
+
+            const data = await res.json();
+            const container = document.getElementById("pendingList");
+            container.innerHTML = "";
+
+            if (data.length === 0) {
+                container.innerHTML = "<p>No pending requests.</p>";
+                return;
+            }
+
+            data.forEach(req => {
+                const div = document.createElement("div");
+                div.classList.add("card");
+                div.innerHTML = `
+          <p><b>User:</b> ${req.email || req.user_id}</p>
+          <button onclick="approve(${req.id})">✅ Approve</button>
+          <button onclick="reject(${req.id})">❌ Reject</button>
+        `;
+                container.appendChild(div);
+            });
+        }
+
+        async function approve(id) {
+            await fetch(`${baseURL}/superadmin/promote/${id}`, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${superToken}` }
+            });
+            fetchPending();
+        }
+
+        async function reject(id) {
+            await fetch(`${baseURL}/superadmin/reject/${id}`, {
+                method: "POST",
+                headers: { "Authorization": `Bearer ${superToken}` }
+            });
+            fetchPending();
+        }
+    </script>
+
+</body>
+
+</html>

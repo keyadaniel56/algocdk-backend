@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace | AlgoCDK - AI Trading Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff0f0',
+                            100: '#ffd6d6',
+                            500: '#ff4500',
+                            600: '#e63e00',
+                            700: '#cc3700',
+                        },
+                        dark: {
+                            900: '#000000',
+                            800: '#1a1a1a',
+                            700: '#333333',
+                            600: '#4d4d4d',
+                        },
+                        success: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff4500;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e63e00;
+        }
+
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 69, 0, 0.3);
+        }
+
+        .banner-slide {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pricing-tabs {
+            display: flex;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #333333;
+            margin-bottom: 16px;
+        }
+
+        .pricing-tab {
+            flex: 1;
+            text-align: center;
+            padding: 8px 12px;
+            background: #1a1a1a;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .pricing-tab.active {
+            background: #ff4500;
+            color: white;
+        }
+
+        .price-display {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .price-period {
+            font-size: 14px;
+            color: #9ca3af;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-white">
+    <!-- Top Navigation Bar -->
+    <nav class="bg-dark-800 border-b border-dark-700 py-3 px-6 flex justify-between items-center sticky top-0 z-10">
+        <div class="flex items-center">
+            <a href="#" class="text-xl font-bold text-white flex items-center">
+                <div class="w-8 h-8 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
+                    <i class="fas fa-robot text-white text-sm"></i>
+                </div>
+                AlgoCDK
+            </a>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="hidden md:flex flex-1 max-w-md mx-4">
+            <div class="relative w-full">
+                <input type="text" placeholder="Search for trading bots..."
+                    class="w-full pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+            </div>
+        </div>
+
+        <div class="flex items-center space-x-4">
+            <!-- Mobile Search Button -->
+            <button class="md:hidden text-gray-400 hover:text-white transition-colors">
+                <i class="fas fa-search"></i>
+            </button>
+
+            <!-- Navigation Links -->
+            <div class="hidden md:flex items-center space-x-4">
+                <a href="#" class="text-gray-300 hover:text-white transition-colors">My Bots</a>
+                <a href="#" class="text-primary-500 font-medium">Marketplace</a>
+                <a href="#" class="text-gray-300 hover:text-white transition-colors">Support</a>
+            </div>
+
+            <!-- User Menu -->
+            <div class="relative">
+                <button id="userMenuButton" class="flex items-center space-x-2 focus:outline-none">
+                    <div
+                        class="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                        JD
+                    </div>
+                    <span class="hidden md:block">John Doe</span>
+                    <i class="fas fa-chevron-down text-gray-400 text-xs"></i>
+                </button>
+
+                <!-- User Dropdown -->
+                <div id="userDropdown"
+                    class="absolute right-0 mt-2 w-48 bg-dark-800 rounded-lg shadow-lg border border-dark-700 hidden z-10">
+                    <div class="py-1">
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">Profile</a>
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">My
+                            Bots</a>
+                        <a href="#"
+                            class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-700 hover:text-white transition-colors">Settings</a>
+                        <div class="border-t border-dark-700 my-1"></div>
+                        <a href="#" class="block px-4 py-2 text-sm text-red-500 hover:bg-dark-700 transition-colors">
+                            <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-6 fade-in">
+        <!-- Advertisement Banner Section -->
+        <section class="mb-8">
+            <div class="relative bg-dark-800 rounded-xl border border-dark-700 overflow-hidden">
+                <!-- Banner Content -->
+                <div id="bannerContent" class="banner-slide p-6 md:p-8">
+                    <div class="flex flex-col md:flex-row items-center">
+                        <div class="md:w-2/3 mb-6 md:mb-0">
+                            <span
+                                class="bg-primary-500/20 text-primary-500 text-xs font-medium px-3 py-1 rounded-full border border-primary-500/30 mb-4 inline-block">NEW
+                                RELEASE</span>
+                            <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">Try the New AI Smart Bot — 95%
+                                Win Rate!</h2>
+                            <p class="text-gray-400 mb-6">Our latest AI-powered trading bot uses advanced machine
+                                learning to predict market movements with unprecedented accuracy.</p>
+                            <div class="flex space-x-4">
+                                <button
+                                    class="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium">
+                                    Try Now
+                                </button>
+                                <button
+                                    class="bg-dark-700 text-white px-6 py-2 rounded-lg hover:bg-dark-600 transition-colors font-medium border border-dark-600">
+                                    Learn More
+                                </button>
+                            </div>
+                        </div>
+                        <div class="md:w-1/3 flex justify-center">
+                            <div
+                                class="w-48 h-48 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center">
+                                <i class="fas fa-robot text-white text-6xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner Navigation -->
+                <div class="absolute bottom-4 right-4 flex space-x-2">
+                    <button
+                        class="banner-nav w-3 h-3 rounded-full bg-primary-500/50 hover:bg-primary-500 transition-colors"
+                        data-banner="0"></button>
+                    <button class="banner-nav w-3 h-3 rounded-full bg-dark-600 hover:bg-primary-500 transition-colors"
+                        data-banner="1"></button>
+                    <button class="banner-nav w-3 h-3 rounded-full bg-dark-600 hover:bg-primary-500 transition-colors"
+                        data-banner="2"></button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section class="mb-8">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-white">Browse Categories</h2>
+                <div class="flex space-x-4">
+                    <!-- Sort Dropdown -->
+                    <div class="relative">
+                        <select id="sortSelect"
+                            class="bg-dark-800 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white appearance-none pr-8">
+                            <option value="newest">Newest</option>
+                            <option value="popular">Most Popular</option>
+                            <option value="rating">Best Rated</option>
+                            <option value="performance">Best Performance</option>
+                            <option value="price-low">Price: Low to High</option>
+                            <option value="price-high">Price: High to Low</option>
+                        </select>
+                        <i class="fas fa-chevron-down absolute right-3 top-3 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Filters -->
+            <div class="flex flex-wrap gap-3 mb-6">
+                <button
+                    class="category-filter bg-primary-500/20 text-primary-500 px-4 py-2 rounded-lg border border-primary-500/30 font-medium"
+                    data-category="all">
+                    All Bots
+                </button>
+                <button
+                    class="category-filter bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
+                    data-category="digit">
+                    Digit Bots
+                </button>
+                <button
+                    class="category-filter bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
+                    data-category="risefall">
+                    Rise/Fall Bots
+                </button>
+                <button
+                    class="category-filter bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
+                    data-category="evenodd">
+                    Even/Odd Bots
+                </button>
+                <button
+                    class="category-filter bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
+                    data-category="community">
+                    Community Bots
+                </button>
+                <button
+                    class="category-filter bg-dark-700 text-gray-300 px-4 py-2 rounded-lg border border-dark-600 hover:bg-dark-600 transition-colors"
+                    data-category="premium">
+                    Premium Bots
+                </button>
+            </div>
+        </section>
+
+        <!-- Bots Grid Section -->
+        <section>
+            <div id="loadingIndicator" class="flex justify-center items-center py-12">
+                <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-500"></div>
+                <span class="ml-3 text-gray-400">Loading trading bots...</span>
+            </div>
+
+            <div id="botsGrid" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Bot cards will be populated here by JavaScript -->
+            </div>
+
+            <div id="noResults" class="hidden text-center py-12">
+                <i class="fas fa-robot text-5xl text-gray-600 mb-4"></i>
+                <h3 class="text-xl font-medium text-white mb-2">No bots found</h3>
+                <p class="text-gray-400">Try adjusting your search or filter criteria</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark-800 border-t border-dark-700 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <div class="flex items-center mb-2">
+                        <div class="w-6 h-6 rounded-lg bg-primary-500 flex items-center justify-center mr-2">
+                            <i class="fas fa-robot text-white text-xs"></i>
+                        </div>
+                        <span class="text-lg font-bold text-white">AlgoCDK</span>
+                    </div>
+                    <p class="text-gray-400 text-sm">&copy; 2023 AlgoCDK. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Terms</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Privacy</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Dummy bot data - in a real app, this would come from an API
+        const botsData = [
+            {
+                id: 1,
+                name: "AI RiseFall Pro",
+                creator: "AlgoCDK Team",
+                category: "risefall",
+                rating: 4.8,
+                performance: "+12.4%",
+                users: 1247,
+                description: "Advanced AI that predicts rise/fall movements with high accuracy using machine learning.",
+                isFavorite: false,
+                isNew: true,
+                rentalPrice: 29.99,
+                purchasePrice: 299.99
+            },
+            {
+                id: 2,
+                name: "Volatility Hunter",
+                creator: "MarketWizards",
+                category: "digit",
+                rating: 4.6,
+                performance: "+15.2%",
+                users: 892,
+                description: "Capitalizes on market volatility with adaptive risk management and dynamic position sizing.",
+                isFavorite: true,
+                isNew: false,
+                rentalPrice: 24.99,
+                purchasePrice: 249.99
+            },
+            {
+                id: 3,
+                name: "Trend Follower",
+                creator: "CryptoGuru",
+                category: "risefall",
+                rating: 4.5,
+                performance: "+10.3%",
+                users: 1045,
+                description: "Identifies and rides market trends with precision entry points and trailing stop losses.",
+                isFavorite: false,
+                isNew: false,
+                rentalPrice: 19.99,
+                purchasePrice: 199.99
+            },
+            {
+                id: 4,
+                name: "Momentum Trader",
+                creator: "QuantPro",
+                category: "evenodd",
+                rating: 4.7,
+                performance: "+13.6%",
+                users: 756,
+                description: "Captures short-term momentum with rapid execution and optimized risk-reward ratios.",
+                isFavorite: false,
+                isNew: true,
+                rentalPrice: 34.99,
+                purchasePrice: 349.99
+            },
+            {
+                id: 5,
+                name: "Scalper Pro",
+                creator: "FastTrades",
+                category: "digit",
+                rating: 4.3,
+                performance: "+8.7%",
+                users: 634,
+                description: "High-frequency scalping strategy with micro positions and rapid profit-taking.",
+                isFavorite: false,
+                isNew: false,
+                rentalPrice: 14.99,
+                purchasePrice: 149.99
+            },
+            {
+                id: 6,
+                name: "Arbitrage Master",
+                creator: "ProfitSeeker",
+                category: "premium",
+                rating: 4.9,
+                performance: "+7.9%",
+                users: 521,
+                description: "Exploits price differences across multiple exchanges with lightning-fast execution.",
+                isFavorite: true,
+                isNew: false,
+                rentalPrice: 49.99,
+                purchasePrice: 499.99
+            },
+            {
+                id: 7,
+                name: "Pattern Recognizer",
+                creator: "AI Traders",
+                category: "community",
+                rating: 4.4,
+                performance: "+9.5%",
+                users: 432,
+                description: "Uses deep learning to identify profitable chart patterns in real-time.",
+                isFavorite: false,
+                isNew: true,
+                rentalPrice: 22.99,
+                purchasePrice: 229.99
+            },
+            {
+                id: 8,
+                name: "News Trader AI",
+                creator: "DataMiners",
+                category: "risefall",
+                rating: 4.6,
+                performance: "+11.2%",
+                users: 689,
+                description: "Analyzes news sentiment and market reactions to make informed trading decisions.",
+                isFavorite: false,
+                isNew: false,
+                rentalPrice: 27.99,
+                purchasePrice: 279.99
+            },
+            {
+                id: 9,
+                name: "Quantum Predictor",
+                creator: "FutureTech",
+                category: "premium",
+                rating: 4.8,
+                performance: "+14.8%",
+                users: 324,
+                description: "Advanced quantum-inspired algorithm for predicting market movements with high precision.",
+                isFavorite: false,
+                isNew: true,
+                rentalPrice: 59.99,
+                purchasePrice: 599.99
+            }
+        ];
+
+        // Banner content data
+        const bannerContent = [
+            {
+                title: "Try the New AI Smart Bot — 95% Win Rate!",
+                description: "Our latest AI-powered trading bot uses advanced machine learning to predict market movements with unprecedented accuracy.",
+                badge: "NEW RELEASE"
+            },
+            {
+                title: "Premium Bots Now Available!",
+                description: "Get access to our exclusive premium trading bots with enhanced features and priority support.",
+                badge: "PREMIUM"
+            },
+            {
+                title: "Community Contest - $10,000 Prize Pool",
+                description: "Submit your trading bot to our community contest and win a share of our $10,000 prize pool!",
+                badge: "CONTEST"
+            }
+        ];
+
+        // DOM Elements
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const botsGrid = document.getElementById('botsGrid');
+        const noResults = document.getElementById('noResults');
+        const categoryFilters = document.querySelectorAll('.category-filter');
+        const sortSelect = document.getElementById('sortSelect');
+        const bannerNavButtons = document.querySelectorAll('.banner-nav');
+        const bannerContentElement = document.getElementById('bannerContent');
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userDropdown = document.getElementById('userDropdown');
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set up event listeners
+            setupEventListeners();
+
+            // Load bots with a slight delay to simulate API call
+            setTimeout(() => {
+                loadBots(botsData);
+            }, 1500);
+        });
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Category filter buttons
+            categoryFilters.forEach(button => {
+                button.addEventListener('click', function () {
+                    // Update active button
+                    categoryFilters.forEach(btn => {
+                        btn.classList.remove('bg-primary-500/20', 'text-primary-500', 'border-primary-500/30');
+                        btn.classList.add('bg-dark-700', 'text-gray-300', 'border-dark-600');
+                    });
+                    this.classList.remove('bg-dark-700', 'text-gray-300', 'border-dark-600');
+                    this.classList.add('bg-primary-500/20', 'text-primary-500', 'border-primary-500/30');
+
+                    // Filter bots
+                    const category = this.getAttribute('data-category');
+                    filterBots(category);
+                });
+            });
+
+            // Sort dropdown
+            sortSelect.addEventListener('change', function () {
+                sortBots(this.value);
+            });
+
+            // Banner navigation
+            bannerNavButtons.forEach(button => {
+                button.addEventListener('click', function () {
+                    const bannerIndex = parseInt(this.getAttribute('data-banner'));
+                    showBanner(bannerIndex);
+                });
+            });
+
+            // User dropdown
+            userMenuButton.addEventListener('click', function () {
+                userDropdown.classList.toggle('hidden');
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (event) {
+                if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                    userDropdown.classList.add('hidden');
+                }
+            });
+
+            // Auto-rotate banners
+            setInterval(() => {
+                const currentActive = document.querySelector('.banner-nav.bg-primary-500');
+                let nextIndex = 0;
+
+                if (currentActive) {
+                    const currentIndex = parseInt(currentActive.getAttribute('data-banner'));
+                    nextIndex = (currentIndex + 1) % bannerNavButtons.length;
+                }
+
+                showBanner(nextIndex);
+            }, 5000);
+        }
+
+        // Load bots into the grid
+        function loadBots(bots) {
+            loadingIndicator.classList.add('hidden');
+
+            if (bots.length === 0) {
+                noResults.classList.remove('hidden');
+                botsGrid.classList.add('hidden');
+                return;
+            }
+
+            botsGrid.classList.remove('hidden');
+            noResults.classList.add('hidden');
+
+            botsGrid.innerHTML = '';
+
+            bots.forEach(bot => {
+                const botCard = createBotCard(bot);
+                botsGrid.appendChild(botCard);
+            });
+        }
+
+        // Create a bot card element
+        function createBotCard(bot) {
+            const card = document.createElement('div');
+            card.className = 'bg-dark-800 rounded-xl border border-dark-700 overflow-hidden card-hover fade-in';
+            card.setAttribute('data-category', bot.category);
+
+            // Generate star rating HTML
+            const stars = generateStarRating(bot.rating);
+
+            card.innerHTML = `
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <div class="flex items-center">
+                                <h3 class="text-lg font-semibold text-white">${bot.name}</h3>
+                                ${bot.isNew ? '<span class="ml-2 bg-primary-500/20 text-primary-500 text-xs font-medium px-2 py-1 rounded border border-primary-500/30">NEW</span>' : ''}
+                            </div>
+                            <p class="text-gray-400 text-sm">by ${bot.creator}</p>
+                        </div>
+                        <button class="favorite-btn text-xl ${bot.isFavorite ? 'text-red-500' : 'text-gray-400'} hover:text-red-500 transition-colors" data-id="${bot.id}">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="flex items-center mb-4">
+                        <div class="flex text-yellow-400 mr-2">
+                            ${stars}
+                        </div>
+                        <span class="text-gray-400 text-sm">${bot.rating}</span>
+                        <span class="mx-2 text-gray-600">•</span>
+                        <span class="text-gray-400 text-sm">${bot.users.toLocaleString()} users</span>
+                    </div>
+                    
+                    <p class="text-gray-400 text-sm mb-6">${bot.description}</p>
+                    
+                    <!-- Pricing Tabs -->
+                    <div class="pricing-tabs">
+                        <div class="pricing-tab active" data-type="rental">Rent</div>
+                        <div class="pricing-tab" data-type="purchase">Buy</div>
+                    </div>
+                    
+                    <!-- Price Display -->
+                    <div class="price-display text-white" id="price-${bot.id}">$${bot.rentalPrice}/month</div>
+                    <div class="price-period text-gray-400" id="period-${bot.id}">Billed monthly</div>
+                    
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <span class="bg-green-500/20 text-green-500 text-xs font-medium px-2 py-1 rounded border border-green-500/30">${bot.performance}</span>
+                            <span class="ml-2 bg-dark-700 text-gray-400 text-xs font-medium px-2 py-1 rounded border border-dark-600">${getCategoryName(bot.category)}</span>
+                        </div>
+                        <button class="action-btn bg-primary-500 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary-600 transition-colors" data-id="${bot.id}" data-type="rental">
+                            Rent Now
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            // Add event listener to favorite button
+            const favoriteBtn = card.querySelector('.favorite-btn');
+            favoriteBtn.addEventListener('click', function () {
+                toggleFavorite(bot.id);
+            });
+
+            // Add event listeners to pricing tabs
+            const pricingTabs = card.querySelectorAll('.pricing-tab');
+            pricingTabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    // Update active tab
+                    pricingTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    // Update price display
+                    const priceType = this.getAttribute('data-type');
+                    updatePriceDisplay(bot.id, priceType, bot);
+                });
+            });
+
+            // Add event listener to action button
+            const actionBtn = card.querySelector('.action-btn');
+            actionBtn.addEventListener('click', function () {
+                const priceType = this.getAttribute('data-type');
+                initiatePurchase(bot.id, priceType, bot);
+            });
+
+            return card;
+        }
+
+        // Update price display based on selected tab
+        function updatePriceDisplay(botId, priceType, bot) {
+            const priceDisplay = document.getElementById(`price-${botId}`);
+            const periodDisplay = document.getElementById(`period-${botId}`);
+            const actionBtn = document.querySelector(`.action-btn[data-id="${botId}"]`);
+
+            if (priceType === 'rental') {
+                priceDisplay.textContent = `$${bot.rentalPrice}/month`;
+                periodDisplay.textContent = 'Billed monthly';
+                actionBtn.textContent = 'Rent Now';
+                actionBtn.setAttribute('data-type', 'rental');
+            } else {
+                priceDisplay.textContent = `$${bot.purchasePrice}`;
+                periodDisplay.textContent = 'One-time payment';
+                actionBtn.textContent = 'Buy Now';
+                actionBtn.setAttribute('data-type', 'purchase');
+            }
+        }
+
+        // Initiate purchase process
+        function initiatePurchase(botId, priceType, bot) {
+            const price = priceType === 'rental' ? bot.rentalPrice : bot.purchasePrice;
+            const action = priceType === 'rental' ? 'rent' : 'purchase';
+
+            // In a real app, this would open a payment modal or redirect to checkout
+            alert(`Initiating ${action} for ${bot.name} at $${price}`);
+
+            // Simulate API call
+            setTimeout(() => {
+                // Show success message
+                showToast(`Successfully ${action === 'rent' ? 'rented' : 'purchased'} ${bot.name}!`);
+            }, 1000);
+        }
+
+        // Generate star rating HTML
+        function generateStarRating(rating) {
+            let stars = '';
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating % 1 >= 0.5;
+
+            for (let i = 0; i < 5; i++) {
+                if (i < fullStars) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i === fullStars && hasHalfStar) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+
+            return stars;
+        }
+
+        // Get category display name
+        function getCategoryName(category) {
+            const categoryNames = {
+                'digit': 'Digit',
+                'risefall': 'Rise/Fall',
+                'evenodd': 'Even/Odd',
+                'community': 'Community',
+                'premium': 'Premium'
+            };
+
+            return categoryNames[category] || category;
+        }
+
+        // Filter bots by category
+        function filterBots(category) {
+            if (category === 'all') {
+                loadBots(botsData);
+            } else {
+                const filteredBots = botsData.filter(bot => bot.category === category);
+                loadBots(filteredBots);
+            }
+        }
+
+        // Sort bots by selected criteria
+        function sortBots(criteria) {
+            let sortedBots = [...botsData];
+
+            switch (criteria) {
+                case 'newest':
+                    // In a real app, this would sort by creation date
+                    // For now, we'll use the isNew property
+                    sortedBots.sort((a, b) => {
+                        if (a.isNew && !b.isNew) return -1;
+                        if (!a.isNew && b.isNew) return 1;
+                        return 0;
+                    });
+                    break;
+                case 'popular':
+                    sortedBots.sort((a, b) => b.users - a.users);
+                    break;
+                case 'rating':
+                    sortedBots.sort((a, b) => b.rating - a.rating);
+                    break;
+                case 'performance':
+                    sortedBots.sort((a, b) => {
+                        const aPerf = parseFloat(a.performance);
+                        const bPerf = parseFloat(b.performance);
+                        return bPerf - aPerf;
+                    });
+                    break;
+                case 'price-low':
+                    sortedBots.sort((a, b) => a.rentalPrice - b.rentalPrice);
+                    break;
+                case 'price-high':
+                    sortedBots.sort((a, b) => b.rentalPrice - a.rentalPrice);
+                    break;
+            }
+
+            loadBots(sortedBots);
+        }
+
+        // Toggle favorite status
+        function toggleFavorite(botId) {
+            const botIndex = botsData.findIndex(bot => bot.id === botId);
+            if (botIndex !== -1) {
+                botsData[botIndex].isFavorite = !botsData[botIndex].isFavorite;
+
+                // Update the button in the UI
+                const favoriteBtn = document.querySelector(`.favorite-btn[data-id="${botId}"]`);
+                if (favoriteBtn) {
+                    if (botsData[botIndex].isFavorite) {
+                        favoriteBtn.classList.remove('text-gray-400');
+                        favoriteBtn.classList.add('text-red-500');
+                    } else {
+                        favoriteBtn.classList.remove('text-red-500');
+                        favoriteBtn.classList.add('text-gray-400');
+                    }
+                }
+            }
+        }
+
+        // Show specific banner
+        function showBanner(index) {
+            // Update banner content
+            const banner = bannerContent[index];
+            bannerContentElement.innerHTML = `
+                <div class="flex flex-col md:flex-row items-center">
+                    <div class="md:w-2/3 mb-6 md:mb-0">
+                        <span class="bg-primary-500/20 text-primary-500 text-xs font-medium px-3 py-1 rounded-full border border-primary-500/30 mb-4 inline-block">${banner.badge}</span>
+                        <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">${banner.title}</h2>
+                        <p class="text-gray-400 mb-6">${banner.description}</p>
+                        <div class="flex space-x-4">
+                            <button class="bg-primary-500 text-white px-6 py-2 rounded-lg hover:bg-primary-600 transition-colors font-medium">
+                                Try Now
+                            </button>
+                            <button class="bg-dark-700 text-white px-6 py-2 rounded-lg hover:bg-dark-600 transition-colors font-medium border border-dark-600">
+                                Learn More
+                            </button>
+                        </div>
+                    </div>
+                    <div class="md:w-1/3 flex justify-center">
+                        <div class="w-48 h-48 bg-gradient-to-br from-primary-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-robot text-white text-6xl"></i>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Update active navigation dot
+            bannerNavButtons.forEach(button => {
+                button.classList.remove('bg-primary-500');
+                button.classList.add('bg-dark-600');
+            });
+
+            bannerNavButtons[index].classList.remove('bg-dark-600');
+            bannerNavButtons[index].classList.add('bg-primary-500');
+        }
+
+        // Show toast notification
+        function showToast(message) {
+            // Create toast element if it doesn't exist
+            let toast = document.getElementById('toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'toast';
+                toast.className = 'fixed top-4 right-4 bg-success-500 text-white px-6 py-3 rounded-lg shadow-lg z-30 border border-success-500/30 hidden';
+                document.body.appendChild(toast);
+            }
+
+            toast.innerHTML = `
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle mr-2"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+
+            toast.classList.remove('hidden');
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algocdk Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff0f0',
+                            100: '#ffd6d6',
+                            500: '#ff4500',
+                            600: '#e63e00',
+                            700: '#cc3700',
+                        },
+                        dark: {
+                            900: '#000000',
+                            800: '#1a1a1a',
+                            700: '#333333',
+                            600: '#4d4d4d',
+                        },
+                        success: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff4500;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e63e00;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-white">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="hidden md:flex md:w-64 md:flex-col">
+            <div class="flex flex-col flex-grow pt-5 overflow-y-auto bg-dark-800 border-r border-dark-700">
+                <div class="flex items-center flex-shrink-0 px-4">
+                    <h1 class="text-2xl font-bold text-primary-500">Algocdk</h1>
+                </div>
+                <div class="mt-8 flex-grow flex flex-col">
+                    <nav class="flex-1 px-4 space-y-2">
+                        <a href="#"
+                            class="flex items-center px-4 py-2 text-white bg-primary-500/20 rounded-lg group border border-primary-500/30"
+                            data-section="dashboard">
+                            <i class="fas fa-chart-line mr-3 text-primary-500"></i>
+                            Dashboard
+                        </a>
+                        <a href="#"
+                            class="flex items-center px-4 py-2 text-gray-400 rounded-lg hover:bg-dark-700 group border border-transparent hover:border-dark-600 transition-colors"
+                            data-section="users">
+                            <i class="fas fa-users mr-3"></i>
+                            Bot Users
+                        </a>
+                        <a href="#"
+                            class="flex items-center px-4 py-2 text-gray-400 rounded-lg hover:bg-dark-700 group border border-transparent hover:border-dark-600 transition-colors"
+                            data-section="bots">
+                            <i class="fas fa-robot mr-3"></i>
+                            My Bots
+                        </a>
+                        <a href="#"
+                            class="flex items-center px-4 py-2 text-gray-400 rounded-lg hover:bg-dark-700 group border border-transparent hover:border-dark-600 transition-colors"
+                            data-section="reports">
+                            <i class="fas fa-chart-bar mr-3"></i>
+                            Reports
+                        </a>
+                        <a href="#"
+                            class="flex items-center px-4 py-2 text-gray-400 rounded-lg hover:bg-dark-700 group border border-transparent hover:border-dark-600 transition-colors"
+                            data-section="settings">
+                            <i class="fas fa-cog mr-3"></i>
+                            Settings
+                        </a>
+                    </nav>
+                </div>
+                <div class="flex-shrink-0 flex border-t border-dark-700 p-4">
+                    <div class="flex items-center">
+                        <div
+                            class="w-9 h-9 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                            AU
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm font-medium text-white" id="adminName">Admin User</p>
+                            <p class="text-xs font-medium text-gray-400" id="adminEmail">admin@Algocdk.com</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="flex flex-col flex-1 overflow-hidden">
+            <!-- Topbar -->
+            <header class="flex items-center justify-between px-6 py-4 bg-dark-800 border-b border-dark-700">
+                <div class="flex items-center">
+                    <button class="text-gray-400 focus:outline-none lg:hidden hover:text-white transition-colors"
+                        id="sidebarToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="relative mx-4 lg:mx-0">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3">
+                            <i class="fas fa-search text-gray-500"></i>
+                        </span>
+                        <input
+                            class="w-32 pl-10 pr-4 py-2 text-white bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:bg-dark-600 focus:border-primary-500 sm:w-64 transition-colors"
+                            type="text" placeholder="Search" id="globalSearch">
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <div class="relative">
+                        <button class="flex mx-4 text-gray-400 focus:outline-none hover:text-white transition-colors"
+                            id="notificationButton">
+                            <i class="fas fa-bell"></i>
+                            <span
+                                class="absolute top-0 right-0 h-2 w-2 rounded-full bg-primary-500 animate-pulse"></span>
+                        </button>
+
+                        <!-- Notification dropdown -->
+                        <div class="absolute right-0 z-10 w-80 mt-2 overflow-hidden bg-dark-700 rounded-lg shadow-xl hidden border border-dark-600"
+                            id="notificationDropdown">
+                            <div class="p-4 border-b border-dark-600">
+                                <h3 class="text-lg font-medium text-white">Notifications</h3>
+                            </div>
+                            <div class="divide-y divide-dark-600 max-h-96 overflow-y-auto" id="notificationsList">
+                                <!-- Notifications will be loaded here -->
+                            </div>
+                            <div class="p-4 border-t border-dark-600">
+                                <a href="#"
+                                    class="block text-center text-sm font-medium text-primary-500 hover:text-primary-400 transition-colors">View
+                                    all notifications</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="relative">
+                        <button class="relative flex items-center focus:outline-none text-white" id="userMenuButton">
+                            <div
+                                class="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-medium">
+                                AU
+                            </div>
+                            <span class="ml-2 text-sm font-medium">Admin</span>
+                            <i class="ml-1 fas fa-chevron-down text-gray-400"></i>
+                        </button>
+
+                        <!-- User dropdown -->
+                        <div class="absolute right-0 z-10 w-48 mt-2 overflow-hidden bg-dark-700 rounded-lg shadow-lg hidden border border-dark-600"
+                            id="userDropdown">
+                            <div class="py-1">
+                                <a href="#"
+                                    class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-600 hover:text-white transition-colors">Your
+                                    Profile</a>
+                                <a href="#"
+                                    class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-600 hover:text-white transition-colors">Settings</a>
+                                <a href="#"
+                                    class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-600 hover:text-white transition-colors">Support</a>
+                                <div class="border-t border-dark-600"></div>
+                                <a href="#" id="logoutBtn"
+                                    class="block px-4 py-2 text-sm text-gray-300 hover:bg-dark-600 hover:text-white transition-colors">Sign
+                                    out</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content Area -->
+            <main class="flex-1 overflow-y-auto p-6 bg-dark-900">
+                <!-- Dashboard Section (default) -->
+                <section id="dashboard" class="fade-in">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-white">Dashboard</h2>
+                        <p class="text-gray-400">Welcome to your Algocdk bot management dashboard</p>
+                    </div>
+
+                    <!-- Stats Cards -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                        <div
+                            class="bg-dark-800 rounded-xl border border-dark-700 p-6 transition-all hover:-translate-y-1 hover:border-primary-500/30">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-primary-500/10 text-primary-500 mr-4">
+                                    <i class="fas fa-robot text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-400">My Bots</p>
+                                    <h3 class="text-2xl font-bold text-white" id="totalBots">Loading...</h3>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-success-500 text-sm font-medium">
+                                    <i class="fas fa-arrow-up mr-1"></i>12.4%
+                                </span>
+                                <span class="text-gray-500 text-sm ml-2">from last month</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-dark-800 rounded-xl border border-dark-700 p-6 transition-all hover:-translate-y-1 hover:border-primary-500/30">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-success-500/10 text-success-500 mr-4">
+                                    <i class="fas fa-users text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-400">My Users</p>
+                                    <h3 class="text-2xl font-bold text-white" id="activeUsers">Loading...</h3>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-success-500 text-sm font-medium">
+                                    <i class="fas fa-arrow-up mr-1"></i>8.2%
+                                </span>
+                                <span class="text-gray-500 text-sm ml-2">from last month</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-dark-800 rounded-xl border border-dark-700 p-6 transition-all hover:-translate-y-1 hover:border-primary-500/30">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-blue-500/10 text-blue-400 mr-4">
+                                    <i class="fas fa-exchange-alt text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-400">My Trades</p>
+                                    <h3 class="text-2xl font-bold text-white" id="activeTrades">Loading...</h3>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-success-500 text-sm font-medium">
+                                    <i class="fas fa-arrow-up mr-1"></i>3.7%
+                                </span>
+                                <span class="text-gray-500 text-sm ml-2">from last week</span>
+                            </div>
+                        </div>
+
+                        <div
+                            class="bg-dark-800 rounded-xl border border-dark-700 p-6 transition-all hover:-translate-y-1 hover:border-primary-500/30">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-purple-500/10 text-purple-400 mr-4">
+                                    <i class="fas fa-chart-line text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-400">My Revenue</p>
+                                    <h3 class="text-2xl font-bold text-white" id="totalRevenue">Loading...</h3>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-success-500 text-sm font-medium">
+                                    <i class="fas fa-arrow-up mr-1"></i>5.1%
+                                </span>
+                                <span class="text-gray-500 text-sm ml-2">from yesterday</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Charts Section -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        <!-- Line Chart -->
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">My Bot Performance</h3>
+                            <div class="h-80">
+                                <canvas id="lineChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Bar Chart -->
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">My Most Popular Bots</h3>
+                            <div class="h-80">
+                                <canvas id="barChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pie Chart and Recent Activity -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Pie Chart -->
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6 lg:col-span-1">
+                            <h3 class="text-lg font-medium text-white mb-4">My Revenue Breakdown</h3>
+                            <div class="h-80">
+                                <canvas id="pieChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity Table -->
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6 lg:col-span-2">
+                            <h3 class="text-lg font-medium text-white mb-4">My Recent Bot Activity</h3>
+                            <div class="overflow-x-auto">
+                                <table class="min-w-full divide-y divide-dark-600">
+                                    <thead>
+                                        <tr>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                                User</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                                Bot</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                                Action</th>
+                                            <th
+                                                class="px-4 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                                Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-dark-600" id="recentActivityTable">
+                                        <!-- Recent activity will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Users Section -->
+                <section id="users" class="fade-in hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-white">My Bot Users</h2>
+                        <p class="text-gray-400">View users who are subscribed to your bots</p>
+                    </div>
+
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-dark-700">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                <div class="mb-4 md:mb-0">
+                                    <h3 class="text-lg font-medium text-white">My Users</h3>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="relative">
+                                        <input type="text" placeholder="Search users..." id="userSearch"
+                                            class="pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                    </div>
+                                    <select id="botFilter"
+                                        class="bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                                        <option value="all">All My Bots</option>
+                                        <!-- Bot options will be loaded here -->
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-dark-600">
+                                <thead class="bg-dark-700">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            User</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Email</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Subscribed Bots</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Status</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-dark-800 divide-y divide-dark-600" id="usersTableBody">
+                                    <!-- Users will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="px-6 py-4 border-t border-dark-700">
+                            <div class="flex items-center justify-between">
+                                <div class="text-sm text-gray-400" id="usersPaginationInfo">
+                                    Loading users...
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button id="prevPage"
+                                        class="px-3 py-1 rounded-lg border border-dark-600 text-gray-400 hover:bg-dark-700 transition-colors">Previous</button>
+                                    <button id="nextPage"
+                                        class="px-3 py-1 rounded-lg border border-dark-600 text-gray-400 hover:bg-dark-700 transition-colors">Next</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Bots Section -->
+                <section id="bots" class="fade-in hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-white">My Bots</h2>
+                        <p class="text-gray-400">Manage your trading bots and their settings</p>
+                    </div>
+
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-dark-700">
+                            <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                <div class="mb-4 md:mb-0">
+                                    <h3 class="text-lg font-medium text-white">My Bots</h3>
+                                </div>
+                                <div class="flex items-center space-x-4">
+                                    <div class="relative">
+                                        <input type="text" placeholder="Search my bots..." id="botSearch"
+                                            class="pl-10 pr-4 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                    </div>
+                                    <button id="createBotBtn"
+                                        class="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors">
+                                        <i class="fas fa-plus mr-2"></i>Create Bot
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-dark-600">
+                                <thead class="bg-dark-700">
+                                    <tr>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Bot Name</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Type</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Status</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Active Users</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Revenue</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-dark-800 divide-y divide-dark-600" id="botsTableBody">
+                                    <!-- Bots will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Reports Section -->
+                <section id="reports" class="fade-in hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-white">My Reports</h2>
+                        <p class="text-gray-400">Generate and view performance reports for your bots</p>
+                    </div>
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-400 mb-1">Report Type</label>
+                                <select id="reportType"
+                                    class="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                                    <option value="performance">My Performance Summary</option>
+                                    <option value="users">My User Activity</option>
+                                    <option value="revenue">My Revenue Report</option>
+                                    <option value="usage">My Bot Usage</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-400 mb-1">Date Range</label>
+                                <select id="dateRange"
+                                    class="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                                    <option value="7">Last 7 days</option>
+                                    <option value="30">Last 30 days</option>
+                                    <option value="90">Last 90 days</option>
+                                    <option value="custom">Custom Range</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-lg font-medium text-white">My Bot Performance Report</h3>
+                            <button id="exportReportBtn"
+                                class="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors flex items-center">
+                                <i class="fas fa-download mr-2"></i>Export My Report
+                            </button>
+                        </div>
+                        <div class="bg-dark-700 rounded-lg p-6 text-center border border-dark-600" id="reportContent">
+                            <i class="fas fa-chart-bar text-6xl text-gray-600 mb-4"></i>
+                            <h3 class="text-xl font-medium text-white mb-2">My Performance Report</h3>
+                            <p class="text-gray-400 mb-6">This report shows detailed performance metrics for your bots
+                                over the selected time period.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6" id="reportStats">
+                                <div class="bg-dark-800 p-4 rounded-lg border border-dark-600">
+                                    <p class="text-sm text-gray-400">My Avg. Performance</p>
+                                    <p class="text-2xl font-bold text-white">+12.4%</p>
+                                </div>
+                                <div class="bg-dark-800 p-4 rounded-lg border border-dark-600">
+                                    <p class="text-sm text-gray-400">My New Subscribers</p>
+                                    <p class="text-2xl font-bold text-white">42</p>
+                                </div>
+                                <div class="bg-dark-800 p-4 rounded-lg border border-dark-600">
+                                    <p class="text-sm text-gray-400">My Total Revenue</p>
+                                    <p class="text-2xl font-bold text-white">$3,248</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Settings Section -->
+                <section id="settings" class="fade-in hidden">
+                    <div class="mb-6">
+                        <h2 class="text-2xl font-bold text-white">My Settings</h2>
+                        <p class="text-gray-400">Configure your account and bot preferences</p>
+                    </div>
+                    <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <div class="md:col-span-1">
+                                <nav class="space-y-1">
+                                    <a href="#" data-settings-tab="account"
+                                        class="bg-primary-500/20 text-primary-500 group flex items-center px-3 py-2 text-sm font-medium rounded-md border border-primary-500/30 settings-nav-link">
+                                        <i class="fas fa-user-circle text-primary-500 mr-3"></i>
+                                        Account Settings
+                                    </a>
+                                    <a href="#" data-settings-tab="notifications"
+                                        class="text-gray-400 hover:bg-dark-700 group flex items-center px-3 py-2 text-sm font-medium rounded-md border border-transparent hover:border-dark-600 transition-colors settings-nav-link">
+                                        <i class="fas fa-bell text-gray-400 mr-3"></i>
+                                        Notifications
+                                    </a>
+                                    <a href="#" data-settings-tab="security"
+                                        class="text-gray-400 hover:bg-dark-700 group flex items-center px-3 py-2 text-sm font-medium rounded-md border border-transparent hover:border-dark-600 transition-colors settings-nav-link">
+                                        <i class="fas fa-shield-alt text-gray-400 mr-3"></i>
+                                        Security
+                                    </a>
+                                    <a href="#" data-settings-tab="billing"
+                                        class="text-gray-400 hover:bg-dark-700 group flex items-center px-3 py-2 text-sm font-medium rounded-md border border-transparent hover:border-dark-600 transition-colors settings-nav-link">
+                                        <i class="fas fa-credit-card text-gray-400 mr-3"></i>
+                                        Billing
+                                    </a>
+                                    <a href="#" data-settings-tab="advanced"
+                                        class="text-gray-400 hover:bg-dark-700 group flex items-center px-3 py-2 text-sm font-medium rounded-md border border-transparent hover:border-dark-600 transition-colors settings-nav-link">
+                                        <i class="fas fa-cog text-gray-400 mr-3"></i>
+                                        Advanced
+                                    </a>
+                                </nav>
+                            </div>
+                            <div class="md:col-span-2">
+                                <!-- Account Settings -->
+                                <div id="account-settings" class="settings-content">
+                                    <h3 class="text-lg font-medium text-white mb-4">My Account Settings</h3>
+                                    <form id="accountForm">
+                                        <div class="space-y-4">
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-400 mb-1">Full
+                                                    Name</label>
+                                                <input type="text" id="fullName"
+                                                    class="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                                                    value="Admin User">
+                                            </div>
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-400 mb-1">Email</label>
+                                                <input type="email" id="adminEmailInput"
+                                                    class="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                                                    value="admin@Algocdk.com">
+                                            </div>
+                                            <div>
+                                                <label
+                                                    class="block text-sm font-medium text-gray-400 mb-1">Company</label>
+                                                <input type="text" id="company"
+                                                    class="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                                                    value="Algocdk Trading">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-gray-400 mb-1">Bio</label>
+                                                <textarea id="bio"
+                                                    class="w-full bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                                                    rows="3">Algorithmic trading bot developer specializing in momentum and mean reversion strategies.</textarea>
+                                            </div>
+                                            <div class="pt-4">
+                                                <button type="submit"
+                                                    class="bg-primary-500 text-white px-6 py-3 rounded-lg hover:bg-primary-600 transition-colors">
+                                                    Save Changes
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <!-- Other settings tabs would go here -->
+                                <div id="notifications-settings" class="settings-content hidden">
+                                    <h3 class="text-lg font-medium text-white mb-4">My Notification Settings</h3>
+                                    <p class="text-gray-400">Configure how you receive notifications about your bots and
+                                        users.</p>
+                                </div>
+
+                                <div id="security-settings" class="settings-content hidden">
+                                    <h3 class="text-lg font-medium text-white mb-4">My Security Settings</h3>
+                                    <p class="text-gray-400">Manage your password and security preferences.</p>
+                                </div>
+
+                                <div id="billing-settings" class="settings-content hidden">
+                                    <h3 class="text-lg font-medium text-white mb-4">My Billing Settings</h3>
+                                    <p class="text-gray-400">View and manage your billing information.</p>
+                                </div>
+
+                                <div id="advanced-settings" class="settings-content hidden">
+                                    <h3 class="text-lg font-medium text-white mb-4">My Advanced Settings</h3>
+                                    <p class="text-gray-400">Advanced configuration options for your account.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- Create Bot Modal -->
+    <div id="createBotModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20 hidden">
+        <div class="bg-dark-800 rounded-xl shadow-lg w-full max-w-2xl p-6 border border-dark-600">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-white">Create New Bot</h3>
+                <button id="closeCreateBotModal" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="createBotForm" enctype="multipart/form-data">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2" for="botName">
+                            Bot Name *
+                        </label>
+                        <input id="botName" type="text"
+                            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2" for="botPrice">
+                            Price *
+                        </label>
+                        <input id="botPrice" type="number" step="0.01"
+                            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2" for="botRentPrice">
+                            Rent Price
+                        </label>
+                        <input id="botRentPrice" type="number" step="0.01"
+                            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2" for="botStrategy">
+                            Strategy *
+                        </label>
+                        <input id="botStrategy" type="text"
+                            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2" for="subscriptionType">
+                            Subscription Type
+                        </label>
+                        <select id="subscriptionType"
+                            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                            <option value="premium">Premium</option>
+                            <option value="free">Free</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2" for="botCategory">
+                            Category
+                        </label>
+                        <input id="botCategory" type="text"
+                            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-400 text-sm font-medium mb-2" for="botVersion">
+                            Version
+                        </label>
+                        <input id="botVersion" type="text"
+                            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="block text-gray-400 text-sm font-medium mb-2" for="botDescription">
+                            Description
+                        </label>
+                        <textarea id="botDescription" rows="3"
+                            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2" for="htmlFile">
+                            HTML File *
+                        </label>
+                        <input id="htmlFile" type="file" accept=".html,.htm"
+                            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-2" for="imageFile">
+                            Image *
+                        </label>
+                        <input id="imageFile" type="file" accept="image/*"
+                            class="w-full px-3 py-2 bg-dark-700 border border-dark-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white"
+                            required>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" id="cancelCreateBot"
+                        class="px-4 py-2 bg-dark-700 border border-dark-600 rounded-lg text-gray-300 hover:bg-dark-600 transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit"
+                        class="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors">
+                        Create Bot
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"
+        class="fixed top-4 right-4 bg-success-500 text-white px-6 py-3 rounded-lg shadow-lg z-30 hidden border border-success-500/30">
+        <div class="flex items-center">
+            <i class="fas fa-check-circle mr-2"></i>
+            <span id="toastMessage">Operation completed successfully!</span>
+        </div>
+    </div>
+
+    <!-- Real-time updates indicator -->
+    <div id="liveIndicator"
+        class="fixed bottom-4 right-4 bg-success-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center border border-success-500/30">
+        <span class="h-2 w-2 bg-white rounded-full mr-2 animate-pulse"></span>
+        <span>Live Updates</span>
+    </div>
+
+    <!-- API Configuration -->
+    <script>
+        const API_BASE_URL = "http://localhost:8080";
+
+        // Helper: Make requests with auth header if token exists
+        async function apiRequest(endpoint, method = "GET", data = null, isForm = false) {
+            const token = localStorage.getItem("token");
+            const headers = token ? { "Authorization": `Bearer ${token}` } : {};
+
+            if (!isForm && data && method !== "GET") {
+                headers["Content-Type"] = "application/json";
+            }
+
+            const options = {
+                method,
+                headers,
+            };
+
+            if (data && method !== "GET") {
+                options.body = isForm ? data : JSON.stringify(data);
+            }
+
+            try {
+                const res = await fetch(`${API_BASE_URL}${endpoint}`, options);
+                if (!res.ok) {
+                    const errorText = await res.text();
+                    throw new Error(`Request failed: ${res.status} - ${errorText}`);
+                }
+                return await res.json();
+            } catch (error) {
+                console.error('API Request failed:', error);
+                throw error;
+            }
+        }
+
+        // Admin API endpoints - updated to match your Go server endpoints
+        async function getAdminDashboard() {
+            return apiRequest(`/api/admin/dashboard`);
+        }
+
+        async function getAdminBots() {
+            return apiRequest(`/api/admin/bots`);
+        }
+
+        async function createBot(formData) {
+            return apiRequest("/api/admin/create-bot", "POST", formData, true);
+        }
+
+        async function updateBot(botId, botData) {
+            return apiRequest(`/api/admin/update-bot/${botId}`, "PUT", botData);
+        }
+
+        async function deleteBot(botId) {
+            return apiRequest(`/api/admin/delete-bot/${botId}`, "DELETE");
+        }
+
+        async function getAdminProfile() {
+            return apiRequest("/api/admin/profile");
+        }
+
+        async function getAdminUsers() {
+            return apiRequest(`/api/admin/users`);
+        }
+
+        async function getAdminReports() {
+            return apiRequest(`/api/admin/reports`);
+        }
+
+        // Check authentication status
+        function checkAuth() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                window.location.href = "/login.html";
+            }
+        }
+
+        // Logout function
+        function logout() {
+            localStorage.removeItem("token");
+            window.location.href = "/login.html";
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+
+            toastMessage.textContent = message;
+
+            if (type === 'error') {
+                toast.classList.remove('bg-success-500', 'border-success-500/30');
+                toast.classList.add('bg-red-500', 'border-red-500/30');
+                toast.querySelector('i').className = 'fas fa-exclamation-circle mr-2';
+            } else {
+                toast.classList.remove('bg-red-500', 'border-red-500/30');
+                toast.classList.add('bg-success-500', 'border-success-500/30');
+                toast.querySelector('i').className = 'fas fa-check-circle mr-2';
+            }
+
+            toast.classList.remove('hidden');
+
+            setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+    </script>
+
+    <script>
+        // DOM Elements
+        const navLinks = document.querySelectorAll('nav a[data-section]');
+        const sections = document.querySelectorAll('main section');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebar = document.querySelector('.hidden.md\\:flex');
+        const notificationButton = document.getElementById('notificationButton');
+        const notificationDropdown = document.getElementById('notificationDropdown');
+        const userMenuButton = document.getElementById('userMenuButton');
+        const userDropdown = document.getElementById('userDropdown');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Modal Elements
+        const createBotModal = document.getElementById('createBotModal');
+        const createBotBtn = document.getElementById('createBotBtn');
+        const closeCreateBotModal = document.getElementById('closeCreateBotModal');
+        const cancelCreateBot = document.getElementById('cancelCreateBot');
+        const createBotForm = document.getElementById('createBotForm');
+
+        // Forms
+        const accountForm = document.getElementById('accountForm');
+
+        // Initialize the dashboard
+        document.addEventListener('DOMContentLoaded', function () {
+            // Check authentication
+            checkAuth();
+
+            // Load admin profile
+            loadAdminProfile();
+
+            // Load dashboard data
+            loadDashboardData();
+
+            // Set up event listeners
+            setupEventListeners();
+
+            // Initialize charts with empty data first
+            initializeCharts();
+        });
+
+        // Set up all event listeners
+        function setupEventListeners() {
+            // Navigation
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // Remove active class from all links
+                    navLinks.forEach(l => {
+                        l.classList.remove('bg-primary-500/20', 'text-white', 'border-primary-500/30');
+                        l.classList.add('text-gray-400', 'hover:bg-dark-700', 'border-transparent');
+                    });
+
+                    // Add active class to clicked link
+                    this.classList.remove('text-gray-400', 'hover:bg-dark-700', 'border-transparent');
+                    this.classList.add('bg-primary-500/20', 'text-white', 'border-primary-500/30');
+
+                    // Hide all sections
+                    sections.forEach(section => {
+                        section.classList.add('hidden');
+                    });
+
+                    // Show target section
+                    const targetSection = document.getElementById(this.dataset.section);
+                    targetSection.classList.remove('hidden');
+                    targetSection.classList.add('fade-in');
+
+                    // Load section-specific data
+                    const section = this.dataset.section;
+                    if (section === 'users') {
+                        loadUsersData();
+                    } else if (section === 'bots') {
+                        loadBotsData();
+                    } else if (section === 'reports') {
+                        loadReportsData();
+                    }
+                });
+            });
+
+            // Mobile sidebar toggle
+            sidebarToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('hidden');
+            });
+
+            // Dropdowns
+            notificationButton.addEventListener('click', function () {
+                notificationDropdown.classList.toggle('hidden');
+                userDropdown.classList.add('hidden');
+            });
+
+            userMenuButton.addEventListener('click', function () {
+                userDropdown.classList.toggle('hidden');
+                notificationDropdown.classList.add('hidden');
+            });
+
+            // Logout
+            logoutBtn.addEventListener('click', function (e) {
+                e.preventDefault();
+                logout();
+            });
+
+            // Create Bot Modal
+            createBotBtn.addEventListener('click', function () {
+                createBotModal.classList.remove('hidden');
+            });
+
+            closeCreateBotModal.addEventListener('click', function () {
+                createBotModal.classList.add('hidden');
+            });
+
+            cancelCreateBot.addEventListener('click', function () {
+                createBotModal.classList.add('hidden');
+            });
+
+            createBotForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                createNewBot();
+            });
+
+            // Account form
+            accountForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                updateAccount();
+            });
+
+            // Settings navigation
+            document.querySelectorAll('.settings-nav-link').forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+
+                    // Update active nav link
+                    document.querySelectorAll('.settings-nav-link').forEach(l => {
+                        l.classList.remove('bg-primary-500/20', 'text-primary-500', 'border-primary-500/30');
+                        l.classList.add('text-gray-400', 'border-transparent');
+                    });
+                    this.classList.add('bg-primary-500/20', 'text-primary-500', 'border-primary-500/30');
+
+                    // Show corresponding content
+                    const tab = this.dataset.settingsTab;
+                    document.querySelectorAll('.settings-content').forEach(content => {
+                        content.classList.add('hidden');
+                    });
+                    document.getElementById(`${tab}-settings`).classList.remove('hidden');
+                });
+            });
+
+            // Close dropdowns when clicking outside
+            document.addEventListener('click', function (event) {
+                if (!notificationButton.contains(event.target) && !notificationDropdown.contains(event.target)) {
+                    notificationDropdown.classList.add('hidden');
+                }
+
+                if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                    userDropdown.classList.add('hidden');
+                }
+            });
+
+            // Close modals when clicking outside
+            document.addEventListener('click', function (e) {
+                if (e.target.id === 'createBotModal') {
+                    createBotModal.classList.add('hidden');
+                }
+            });
+        }
+
+        // Load admin profile
+        async function loadAdminProfile() {
+            try {
+                const profile = await getAdminProfile();
+                document.getElementById('adminName').textContent = profile.admin.name || 'Admin User';
+                document.getElementById('adminEmail').textContent = profile.admin.email || 'admin@Algocdk.com';
+                document.getElementById('adminEmailInput').value = profile.admin.email || 'admin@Algocdk.com';
+                document.getElementById('fullName').value = profile.admin.name || 'Admin User';
+
+            } catch (error) {
+                console.error('Error loading admin profile:', error);
+                showToast('Error loading admin profile', 'error');
+            }
+        }
+
+        // Load dashboard data
+        async function loadDashboardData() {
+            try {
+                const dashboardData = await getAdminDashboard();
+
+                // Update stats
+                document.getElementById('totalBots').textContent = dashboardData.total_bots || '0';
+                document.getElementById('activeUsers').textContent = dashboardData.active_users || '0';
+                document.getElementById('activeTrades').textContent = dashboardData.active_trades || '0';
+                document.getElementById('totalRevenue').textContent = '$' + (dashboardData.total_revenue || '0');
+
+                // Update recent activity
+                updateRecentActivity(dashboardData.recent_activity);
+
+                // Update charts with real data
+                if (dashboardData.charts) {
+                    updateCharts(dashboardData.charts);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+                showToast('Error loading dashboard data', 'error');
+
+                // Fallback to mock data
+                loadMockDashboardData();
+            }
+        }
+
+        // Load mock dashboard data as fallback
+        function loadMockDashboardData() {
+            document.getElementById('totalBots').textContent = '8';
+            document.getElementById('activeUsers').textContent = '247';
+            document.getElementById('activeTrades').textContent = '892';
+            document.getElementById('totalRevenue').textContent = '$24,892';
+
+            // Load mock recent activity
+            const mockActivity = [
+                {
+                    user: { name: "Jane Cooper", email: "jane@example.com", initials: "JC", color: "blue" },
+                    bot: "Momentum Trader",
+                    action: "Subscribed",
+                    time: "2 min ago"
+                },
+                {
+                    user: { name: "Robert Fox", email: "robert@example.com", initials: "RF", color: "green" },
+                    bot: "Arbitrage Pro",
+                    action: "Updated Settings",
+                    time: "15 min ago"
+                },
+                {
+                    user: { name: "Darlene Robertson", email: "darlene@example.com", initials: "DR", color: "purple" },
+                    bot: "Mean Reversion",
+                    action: "Unsubscribed",
+                    time: "1 hour ago"
+                }
+            ];
+
+            updateRecentActivity(mockActivity);
+        }
+
+        // Update recent activity table
+        function updateRecentActivity(activities = []) {
+            const tbody = document.getElementById('recentActivityTable');
+
+            if (!activities || activities.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="4" class="px-4 py-3 text-center text-gray-400">
+                            No recent activity for your bots
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = activities.map(activity => {
+                const actionClass = {
+                    'Subscribed': 'bg-success-500/20 text-success-500 border border-success-500/30',
+                    'Updated Settings': 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
+                    'Unsubscribed': 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30',
+                    'Performance Alert': 'bg-purple-500/20 text-purple-400 border border-purple-500/30'
+                }[activity.action] || 'bg-gray-500/20 text-gray-400 border border-gray-500/30';
+
+                return `
+                    <tr>
+                        <td class="px-4 py-3 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bg-${activity.user.color}-500 flex items-center justify-center text-white font-medium mr-3">
+                                    ${activity.user.initials}
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-white">${activity.user.name}</div>
+                                    <div class="text-sm text-gray-400">${activity.user.email}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-400">${activity.bot}</td>
+                        <td class="px-4 py-3 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${actionClass}">
+                                ${activity.action}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-400">${activity.time}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Initialize charts
+        function initializeCharts() {
+            // Line Chart
+            const lineCtx = document.getElementById('lineChart').getContext('2d');
+            window.lineChart = new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
+                    datasets: [{
+                        label: 'My Bot Performance (%)',
+                        data: [5, 8, 12, 9, 15, 18, 22],
+                        borderColor: '#ff4500',
+                        backgroundColor: 'rgba(255, 69, 0, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Bar Chart
+            const barCtx = document.getElementById('barChart').getContext('2d');
+            window.barChart = new Chart(barCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Momentum Trader', 'Arbitrage Pro', 'Mean Reversion', 'Trend Follower', 'Scalper Bot'],
+                    datasets: [{
+                        label: 'My Active Users',
+                        data: [142, 87, 63, 45, 32],
+                        backgroundColor: [
+                            'rgba(255, 69, 0, 0.8)',
+                            'rgba(255, 100, 0, 0.8)',
+                            'rgba(255, 130, 0, 0.8)',
+                            'rgba(255, 160, 0, 0.8)',
+                            'rgba(255, 190, 0, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(255, 69, 0)',
+                            'rgb(255, 100, 0)',
+                            'rgb(255, 130, 0)',
+                            'rgb(255, 160, 0)',
+                            'rgb(255, 190, 0)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Pie Chart
+            const pieCtx = document.getElementById('pieChart').getContext('2d');
+            window.pieChart = new Chart(pieCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Premium Subscriptions', 'One-time Purchases', 'Commission', 'Other'],
+                    datasets: [{
+                        data: [65, 20, 10, 5],
+                        backgroundColor: [
+                            'rgba(255, 69, 0, 0.8)',
+                            'rgba(255, 100, 0, 0.8)',
+                            'rgba(255, 130, 0, 0.8)',
+                            'rgba(255, 160, 0, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgb(255, 69, 0)',
+                            'rgb(255, 100, 0)',
+                            'rgb(255, 130, 0)',
+                            'rgb(255, 160, 0)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: 'rgba(255, 255, 255, 0.7)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update charts with real data
+        function updateCharts(chartData = {}) {
+            if (window.lineChart && chartData.performance) {
+                window.lineChart.data.labels = chartData.performance.labels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+                window.lineChart.data.datasets[0].data = chartData.performance.data || [5, 8, 12, 9, 15, 18, 22];
+                window.lineChart.update();
+            }
+
+            if (window.barChart && chartData.popular_bots) {
+                window.barChart.data.labels = chartData.popular_bots.labels || ['Momentum Trader', 'Arbitrage Pro', 'Mean Reversion', 'Trend Follower', 'Scalper Bot'];
+                window.barChart.data.datasets[0].data = chartData.popular_bots.data || [142, 87, 63, 45, 32];
+                window.barChart.update();
+            }
+
+            if (window.pieChart && chartData.revenue_breakdown) {
+                window.pieChart.data.labels = chartData.revenue_breakdown.labels || ['Premium Subscriptions', 'One-time Purchases', 'Commission', 'Other'];
+                window.pieChart.data.datasets[0].data = chartData.revenue_breakdown.data || [65, 20, 10, 5];
+                window.pieChart.update();
+            }
+        }
+
+        // Load users data
+        async function loadUsersData() {
+            try {
+                const usersData = await getAdminUsers();
+                renderUsersTable(usersData);
+                updateBotFilterWithBots(usersData);
+            } catch (error) {
+                console.error('Error loading users data:', error);
+                showToast('Error loading users data', 'error');
+
+                // For now, using mock data
+                const mockUsers = [
+                    {
+                        id: 1,
+                        name: "Jane Cooper",
+                        email: "jane@example.com",
+                        status: "Premium User",
+                        userStatus: "Active",
+                        subscribedBots: ["Momentum Trader", "Trend Follower"],
+                        initials: "JC",
+                        color: "blue"
+                    },
+                    {
+                        id: 2,
+                        name: "Robert Fox",
+                        email: "robert@example.com",
+                        status: "Free User",
+                        userStatus: "Active",
+                        subscribedBots: ["Arbitrage Pro"],
+                        initials: "RF",
+                        color: "green"
+                    },
+                    {
+                        id: 3,
+                        name: "Darlene Robertson",
+                        email: "darlene@example.com",
+                        status: "Premium User",
+                        userStatus: "Inactive",
+                        subscribedBots: ["Mean Reversion", "Scalper Bot"],
+                        initials: "DR",
+                        color: "purple"
+                    }
+                ];
+
+                renderUsersTable(mockUsers);
+                updateBotFilterWithBots(mockUsers);
+            }
+        }
+
+        // Render users table
+        function renderUsersTable(users) {
+            const tbody = document.getElementById('usersTableBody');
+
+            if (!users || users.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-gray-400">
+                            No users subscribed to your bots
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => {
+                const statusColor = user.userStatus === 'Active' ? 'text-success-500' : 'text-red-500';
+
+                return `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 rounded-full bg-${user.color}-500 flex items-center justify-center text-white font-medium mr-3">
+                                    ${user.initials}
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-white">${user.name}</div>
+                                    <div class="text-sm text-gray-400">${user.status}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">${user.email}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex flex-wrap gap-1">
+                                ${user.subscribedBots.map(bot => {
+                    const botClass = {
+                        'Momentum Trader': 'bg-primary-500/20 text-primary-500 border border-primary-500/30',
+                        'Trend Follower': 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
+                        'Arbitrage Pro': 'bg-blue-500/20 text-blue-400 border border-blue-500/30',
+                        'Mean Reversion': 'bg-green-500/20 text-green-400 border border-green-500/30',
+                        'Scalper Bot': 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30'
+                    }[bot] || 'bg-gray-500/20 text-gray-400 border border-gray-500/30';
+
+                    return `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${botClass}">${bot}</span>`;
+                }).join('')}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="${statusColor}"><i class="fas fa-circle mr-1"></i>${user.userStatus}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button class="text-primary-500 hover:text-primary-400 mr-3 transition-colors" onclick="viewUserDetails(${user.id})">
+                                View Details
+                            </button>
+                            <button class="text-gray-500 hover:text-gray-400 transition-colors" disabled title="Cannot manage user accounts">
+                                <i class="fas fa-ban mr-1"></i>Manage
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            // Update pagination info
+            document.getElementById('usersPaginationInfo').innerHTML = `
+                Showing <span class="font-medium text-white">1</span> to <span class="font-medium text-white">${users.length}</span> of
+                <span class="font-medium text-white">${users.length}</span> users subscribed to your bots
+            `;
+        }
+
+        // Update bot filter options with admin's bots
+        function updateBotFilterWithBots(users) {
+            const botFilter = document.getElementById('botFilter');
+            const allBots = new Set();
+
+            users.forEach(user => {
+                user.subscribedBots.forEach(bot => allBots.add(bot));
+            });
+
+            // Clear existing options (keep "All My Bots")
+            while (botFilter.children.length > 1) {
+                botFilter.removeChild(botFilter.lastChild);
+            }
+
+            // Add bot options
+            allBots.forEach(bot => {
+                const option = document.createElement('option');
+                option.value = bot.toLowerCase().replace(' ', '-');
+                option.textContent = bot;
+                botFilter.appendChild(option);
+            });
+        }
+
+        // Load bots data
+        async function loadBotsData() {
+            try {
+                const bots = await getAdminBots();
+                renderBotsTable(bots);
+            } catch (error) {
+                console.error('Error loading bots data:', error);
+                showToast('Error loading bots data', 'error');
+
+                // Fallback to mock data
+                loadMockBotsData();
+            }
+        }
+
+        // Load mock bots data as fallback
+        function loadMockBotsData() {
+            const mockBots = [
+                {
+                    id: 1,
+                    name: "Momentum Trader",
+                    type: "premium",
+                    status: "Active",
+                    active_users: 142,
+                    revenue: 12450,
+                    updated_at: "2 days ago"
+                },
+                {
+                    id: 2,
+                    name: "Arbitrage Pro",
+                    type: "free",
+                    status: "Active",
+                    active_users: 87,
+                    revenue: 0,
+                    updated_at: "1 week ago"
+                },
+                {
+                    id: 3,
+                    name: "Mean Reversion",
+                    type: "premium",
+                    status: "Active",
+                    active_users: 63,
+                    revenue: 8720,
+                    updated_at: "3 days ago"
+                },
+                {
+                    id: 4,
+                    name: "Trend Follower",
+                    type: "premium",
+                    status: "Inactive",
+                    active_users: 0,
+                    revenue: 0,
+                    updated_at: "5 days ago"
+                }
+            ];
+
+            renderBotsTable(mockBots);
+        }
+
+        // Render bots table
+        function renderBotsTable(bots) {
+            const tbody = document.getElementById('botsTableBody');
+
+            if (!bots || bots.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="px-6 py-4 text-center text-gray-400">
+                            No bots found. <button class="text-primary-500 hover:text-primary-400" onclick="document.getElementById('createBotBtn').click()">Create your first bot</button>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = bots.bots.map(bot => {
+                const typeClass = bot.subscription_type === 'premium' ?
+                    'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
+                    'bg-gray-500/20 text-gray-400 border border-gray-500/30';
+
+                const statusColor = bot.status === 'Active' ? 'text-success-500' : 'text-red-500';
+                const canDelete = bot.users && bot.users.length === 0;
+
+                return `
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-10 w-10 bg-primary-500/10 rounded-lg flex items-center justify-center border border-primary-500/20">
+                                    <i class="fas fa-robot text-primary-500"></i>
+                                </div>
+                                <div class="ml-4">
+                                    <div class="text-sm font-medium text-white">${bot.name}</div>
+                                    <div class="text-sm text-gray-400">Price: $${bot.price}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${typeClass}">
+                                ${bot.subscription_type === 'premium' ? 'Premium' : 'Free'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="${statusColor}"><i class="fas fa-circle mr-1"></i>${bot.status || 'Inactive'}</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">${bot.users ? bot.users.length : 0}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">$${bot.revenue || '0'}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <button class="text-primary-500 hover:text-primary-400 mr-3 transition-colors" onclick="editBot(${bot.id})">
+                                Edit
+                            </button>
+                            <button class="text-primary-500 hover:text-primary-400 mr-3 transition-colors" onclick="viewBotStats(${bot.id})">
+                                View Stats
+                            </button>
+                            <button class="${canDelete ? 'text-red-500 hover:text-red-400' : 'text-gray-500 cursor-not-allowed'} transition-colors" 
+                                ${canDelete ? '' : 'disabled'} 
+                                onclick="${canDelete ? `deleteBot(${bot.id})` : ''}"
+                                title="${canDelete ? '' : 'Cannot delete bot with active users'}">
+                                <i class="fas ${canDelete ? 'fa-trash' : 'fa-ban'} mr-1"></i>Delete
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Load reports data
+        async function loadReportsData() {
+            try {
+                const reportsData = await getAdminReports();
+                showToast('Your reports data loaded successfully');
+            } catch (error) {
+                console.error('Error loading reports data:', error);
+                showToast('Error loading your reports data', 'error');
+            }
+        }
+
+        // Create new bot
+        async function createNewBot() {
+            const name = document.getElementById('botName').value;
+            const price = document.getElementById('botPrice').value;
+            const rentPrice = document.getElementById('botRentPrice').value;
+            const strategy = document.getElementById('botStrategy').value;
+            const subscriptionType = document.getElementById('subscriptionType').value;
+            const description = document.getElementById('botDescription').value;
+            const category = document.getElementById('botCategory').value;
+            const version = document.getElementById('botVersion').value;
+            const htmlFile = document.getElementById('htmlFile').files[0];
+            const imageFile = document.getElementById('imageFile').files[0];
+
+            if (!name || !price || !strategy || !htmlFile || !imageFile) {
+                showToast('Please fill all required fields', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('name', name);
+            formData.append('price', price);
+            formData.append('rent_price', rentPrice || '0');
+            formData.append('strategy', strategy);
+            formData.append('subscription_type', subscriptionType);
+            formData.append('description', description);
+            formData.append('category', category);
+            formData.append('version', version);
+            formData.append('html_file', htmlFile);
+            formData.append('image', imageFile);
+
+            try {
+                const response = await createBot(formData);
+
+                // Close modal and reset form
+                createBotModal.classList.add('hidden');
+                document.getElementById('createBotForm').reset();
+
+                // Reload bots table
+                loadBotsData();
+
+                // Show success toast
+                showToast(response.message || 'Your bot created successfully!');
+
+                if (response.bot_link) {
+                    console.log('Bot link:', response.bot_link);
+                }
+            } catch (error) {
+                console.error('Error creating bot:', error);
+                showToast('Error creating your bot: ' + error.message, 'error');
+            }
+        }
+
+        // Update account
+        async function updateAccount() {
+            try {
+                const name = document.getElementById('fullName').value;
+                const email = document.getElementById('adminEmailInput').value;
+                const company = document.getElementById('company').value;
+                const bio = document.getElementById('bio').value;
+
+                // This would be replaced with actual API call when available
+                // await updateAdminProfile({ name, email, company, bio });
+
+                // Update display names
+                document.getElementById('adminName').textContent = name;
+                document.getElementById('adminEmail').textContent = email;
+
+                showToast('Your account updated successfully');
+            } catch (error) {
+                console.error('Error updating account:', error);
+                showToast('Error updating your account', 'error');
+            }
+        }
+
+        // Bot management functions
+        function editBot(botId) {
+            showToast('Edit bot functionality coming soon');
+        }
+
+        function viewBotStats(botId) {
+            showToast('View bot stats functionality coming soon');
+        }
+
+        async function deleteBot(botId) {
+            if (confirm('Are you sure you want to delete your bot?')) {
+                try {
+                    await deleteBot(botId);
+                    loadBotsData();
+                    showToast('Your bot deleted successfully');
+                } catch (error) {
+                    console.error('Error deleting bot:', error);
+                    showToast('Error deleting your bot', 'error');
+                }
+            }
+        }
+
+        function viewUserDetails(userId) {
+            showToast('View user details functionality coming soon');
+        }
+
+        // Global functions for event handlers
+        window.editBot = editBot;
+        window.viewBotStats = viewBotStats;
+        window.deleteBot = deleteBot;
+        window.viewUserDetails = viewUserDetails;
+
+        // Simulate real-time updates
+        function updateStats() {
+            // Flash the live indicator
+            const indicator = document.getElementById('liveIndicator');
+            indicator.classList.add('bg-success-600');
+            setTimeout(() => {
+                indicator.classList.remove('bg-success-600');
+            }, 500);
+        }
+
+        // Update stats every 10 seconds
+        setInterval(updateStats, 10000);
+    </script>
+</body>
+
+</html>

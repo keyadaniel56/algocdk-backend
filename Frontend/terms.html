@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms and Conditions - Algocdk</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#fff0f0',
+                            100: '#ffd6d6',
+                            500: '#ff4500',
+                            600: '#e63e00',
+                            700: '#cc3700',
+                        },
+                        dark: {
+                            900: '#000000',
+                            800: '#1a1a1a',
+                            700: '#333333',
+                            600: '#4d4d4d',
+                        },
+                        success: {
+                            500: '#10b981',
+                            600: '#059669',
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.5s ease-in-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #ff4500;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #e63e00;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .content-section {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, rgba(255, 69, 0, 0.1) 0%, rgba(255, 69, 0, 0.05) 100%);
+            border-left: 4px solid #ff4500;
+        }
+    </style>
+</head>
+
+<body class="bg-dark-900 text-white min-h-screen">
+    <!-- Header -->
+    <header class="bg-dark-800 border-b border-dark-700">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center">
+                <a href="index" class="text-2xl font-bold text-primary-500">
+                    Algocdk
+                </a>
+                <nav class="hidden md:flex space-x-6">
+                    <a href="/" class="text-gray-400 hover:text-white transition-colors">Dashboard</a>
+                    <a href="terms" class="text-primary-500 font-medium">Terms</a>
+                    <a href="privacy" class="text-gray-400 hover:text-white transition-colors">Privacy</a>
+                    <a href="support" class="text-gray-400 hover:text-white transition-colors">Support</a>
+                </nav>
+                <button class="md:hidden text-gray-400">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-10 fade-in">
+        <div class="max-w-4xl mx-auto">
+            <div class="text-center mb-10">
+                <h1 class="text-4xl font-bold text-white mb-4">Terms and Conditions</h1>
+                <p class="text-gray-400 text-lg">Effective Date: October 20, 2025</p>
+            </div>
+
+            <div class="bg-dark-800 rounded-xl border border-dark-700 p-8 content-section">
+                <section class="space-y-8">
+                    <div class="highlight-box p-4 rounded-lg">
+                        <p class="text-gray-300">Welcome to <strong class="text-primary-500">Algocdk</strong> ("we,"
+                            "our," "us"). By accessing or using our platform, website, or services (collectively
+                            referred to as the "Platform"), you agree to comply with and be bound by these Terms and
+                            Conditions ("Terms").</p>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">1. Introduction</h2>
+                        <p class="text-gray-300">These Terms govern your use of Algocdk and form a legally binding
+                            agreement between you and <strong class="text-primary-500">CDK Technologies</strong>. If you
+                            do not agree, please discontinue use of the Platform.</p>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">2. Definitions</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-user text-primary-500 mr-2"></i>
+                                    <h3 class="font-medium text-white">User</h3>
+                                </div>
+                                <p class="text-gray-300 text-sm">Any person who accesses or uses the Algocdk Platform.
+                                </p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-code text-primary-500 mr-2"></i>
+                                    <h3 class="font-medium text-white">Developer</h3>
+                                </div>
+                                <p class="text-gray-300 text-sm">A user who creates, uploads, or manages bots or trading
+                                    strategies.</p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-robot text-primary-500 mr-2"></i>
+                                    <h3 class="font-medium text-white">Bot</h3>
+                                </div>
+                                <p class="text-gray-300 text-sm">An automated trading strategy uploaded or managed
+                                    through Algocdk.</p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-cogs text-primary-500 mr-2"></i>
+                                    <h3 class="font-medium text-white">Service</h3>
+                                </div>
+                                <p class="text-gray-300 text-sm">Includes all tools, analytics, hosting, and community
+                                    features provided.</p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600 md:col-span-2">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-exchange-alt text-primary-500 mr-2"></i>
+                                    <h3 class="font-medium text-white">Deriv</h3>
+                                </div>
+                                <p class="text-gray-300 text-sm">Refers to the third-party broker integrated with
+                                    Algocdk for trade execution.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">3. Eligibility</h2>
+                        <p class="text-gray-300 mb-4">To use Algocdk, you must:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600 text-center">
+                                <div
+                                    class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-user-check text-primary-500 text-xl"></i>
+                                </div>
+                                <p class="text-gray-300">Be at least 18 years old</p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600 text-center">
+                                <div
+                                    class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-balance-scale text-primary-500 text-xl"></i>
+                                </div>
+                                <p class="text-gray-300">Comply with local laws on trading</p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600 text-center">
+                                <div
+                                    class="w-12 h-12 rounded-full bg-primary-500/10 flex items-center justify-center mx-auto mb-3">
+                                    <i class="fas fa-id-card text-primary-500 text-xl"></i>
+                                </div>
+                                <p class="text-gray-300">Hold a valid Deriv account</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">4. Use of Platform</h2>
+                        <p class="text-gray-300 mb-4">You agree not to misuse the Platform. You must not:</p>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-ban text-red-500 mt-1 mr-3"></i>
+                                <p class="text-gray-300">Disrupt or interfere with Algocdk's functionality</p>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-ban text-red-500 mt-1 mr-3"></i>
+                                <p class="text-gray-300">Access data or areas without permission</p>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-ban text-red-500 mt-1 mr-3"></i>
+                                <p class="text-gray-300">Upload or use bots that engage in illegal or fraudulent trading
+                                </p>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-ban text-red-500 mt-1 mr-3"></i>
+                                <p class="text-gray-300">Copy or reverse-engineer Algocdk's code or APIs</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">5. Account Registration</h2>
+                        <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                            <div class="flex items-start">
+                                <i class="fas fa-user-shield text-primary-500 mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-gray-300">You agree to provide accurate details and keep your
+                                        credentials secure. Algocdk may suspend or terminate accounts that violate these
+                                        Terms.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">6. Trading Disclaimer</h2>
+                        <div class="bg-red-500/10 rounded-lg p-4 border border-red-500/20 mb-4">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-triangle text-red-500 mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-gray-300">Algocdk provides trading automation tools but does <strong
+                                            class="text-red-400">not offer financial advice</strong>. Trading involves
+                                        significant risk, and you acknowledge that:</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-hand-point-right text-primary-500 mt-1 mr-3"></i>
+                                <p class="text-gray-300">You are fully responsible for your trades and outcomes</p>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-hand-point-right text-primary-500 mt-1 mr-3"></i>
+                                <p class="text-gray-300">Past results do not guarantee future profits</p>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-hand-point-right text-primary-500 mt-1 mr-3"></i>
+                                <p class="text-gray-300">Algocdk is not liable for financial losses or market volatility
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">7. Developer Responsibilities</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                    <h3 class="font-medium text-white">Compliance</h3>
+                                </div>
+                                <p class="text-gray-300 text-sm">Ensure uploaded bots comply with all broker and legal
+                                    policies</p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-copyright text-primary-500 mr-2"></i>
+                                    <h3 class="font-medium text-white">Ownership</h3>
+                                </div>
+                                <p class="text-gray-300 text-sm">Retain ownership of bot code while granting Algocdk
+                                    hosting rights</p>
+                            </div>
+                            <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                                <div class="flex items-center mb-2">
+                                    <i class="fas fa-info-circle text-blue-400 mr-2"></i>
+                                    <h3 class="font-medium text-white">Transparency</h3>
+                                </div>
+                                <p class="text-gray-300 text-sm">Disclose pricing, markups, and strategy terms clearly
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">8. Fees and Payments</h2>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <i class="fas fa-money-bill-wave text-primary-500 mt-1 mr-3"></i>
+                                <p class="text-gray-300">Algocdk may charge hosting, usage, or subscription fees</p>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-receipt text-primary-500 mt-1 mr-3"></i>
+                                <p class="text-gray-300">All payments are non-refundable unless otherwise stated</p>
+                            </div>
+                            <div class="flex items-start">
+                                <i class="fas fa-credit-card text-primary-500 mt-1 mr-3"></i>
+                                <p class="text-gray-300">Users are responsible for any broker fees, taxes, or withdrawal
+                                    charges</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">9. Data Privacy</h2>
+                        <div class="bg-dark-700 rounded-lg p-4 border border-dark-600">
+                            <div class="flex items-start">
+                                <i class="fas fa-shield-alt text-primary-500 mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-gray-300">We collect limited data for account management and platform
+                                        performance. Algocdk does not sell your personal data to third parties. For
+                                        details, refer to our <a href="privacy"
+                                            class="text-primary-500 underline hover:text-primary-400 transition-colors">Privacy
+                                            Policy</a>.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">10. Intellectual Property</h2>
+                        <p class="text-gray-300">All platform content and trademarks belong to <strong
+                                class="text-primary-500">CDK Technologies</strong>. Users retain ownership of their bots
+                            but grant Algocdk permission to host and display them.</p>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">11. Third-Party Services</h2>
+                        <p class="text-gray-300">Algocdk integrates with Deriv and other platforms. We are not
+                            responsible for downtime, account issues, or third-party errors. Their terms govern your use
+                            of their services.</p>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">12. Limitation of Liability</h2>
+                        <div class="bg-yellow-500/10 rounded-lg p-4 border border-yellow-500/20">
+                            <div class="flex items-start">
+                                <i class="fas fa-exclamation-circle text-yellow-500 mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-gray-300">Algocdk and its owners are not liable for any indirect,
+                                        incidental, or financial losses caused by using the platform. You agree to use
+                                        Algocdk at your own risk.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">13. Termination</h2>
+                        <p class="text-gray-300">We may suspend or terminate accounts that violate these Terms or
+                            compromise platform security. Upon termination, all rights to use Algocdk end immediately.
+                        </p>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">14. Updates to Terms</h2>
+                        <div class="bg-blue-500/10 rounded-lg p-4 border border-blue-500/20">
+                            <div class="flex items-start">
+                                <i class="fas fa-sync-alt text-blue-400 mt-1 mr-3"></i>
+                                <div>
+                                    <p class="text-gray-300">Algocdk may update these Terms periodically. Continued use
+                                        after any update means you accept the latest version.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">15. Governing Law</h2>
+                        <p class="text-gray-300">These Terms are governed by the laws of <strong
+                                class="text-primary-500">Kenya</strong>. Any disputes will be handled in Kenyan courts
+                            or through arbitration at Algocdk's discretion.</p>
+                    </div>
+
+                    <div class="border-l-4 border-primary-500 pl-4">
+                        <h2 class="text-2xl font-semibold text-white mb-4">16. Contact Information</h2>
+                        <p class="text-gray-300 mb-4">If you have any questions, please contact us at:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <a href="mailto:support@Algocdk.com"
+                                class="bg-dark-700 rounded-lg p-4 border border-dark-600 hover:border-primary-500 transition-colors group">
+                                <div class="flex items-center">
+                                    <i
+                                        class="fas fa-envelope text-primary-500 text-xl mr-3 group-hover:scale-110 transition-transform"></i>
+                                    <div>
+                                        <h3 class="font-medium text-white">Email Support</h3>
+                                        <p class="text-gray-400 text-sm">support@Algocdk.com</p>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="https://www.Algocdk.com" target="_blank"
+                                class="bg-dark-700 rounded-lg p-4 border border-dark-600 hover:border-primary-500 transition-colors group">
+                                <div class="flex items-center">
+                                    <i
+                                        class="fas fa-globe text-primary-500 text-xl mr-3 group-hover:scale-110 transition-transform"></i>
+                                    <div>
+                                        <h3 class="font-medium text-white">Website</h3>
+                                        <p class="text-gray-400 text-sm">www.Algocdk.com</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-dark-800 border-t border-dark-700 mt-16">
+        <div class="container mx-auto px-6 py-8">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p class="text-gray-400">&copy; 2025 Algocdk by CDK Technologies. All rights reserved.</p>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="terms" class="text-primary-500 font-medium">Terms & Conditions</a>
+                    <a href="privacy" class="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
+                    <a href="support" class="text-gray-400 hover:text-white transition-colors">Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple fade-in animation for page load
+        document.addEventListener('DOMContentLoaded', function () {
+            document.body.classList.add('fade-in');
+        });
+    </script>
+</body>
+
+</html>
