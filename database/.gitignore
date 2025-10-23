@@ -1,0 +1,32 @@
+# Binaries
+main
+*.exe
+*.out
+*.log
+
+# Databases
+app.db
+*.db
+
+# Uploaded files
+uploads/
+cmd/server/uploads/
+tmp/
+cmd/tmp/
+
+# Build files
+build/
+dist/
+bin/
+
+# IDE and system files
+.vscode/
+.idea/
+.DS_Store
+
+# Environment files
+.env
+
+# Node, frontend cache (if any)
+node_modules/
+Frontend/node_modules/
