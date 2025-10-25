@@ -72,11 +72,11 @@ func LoginHandler(ctx *gin.Context) {
 	})
 
 	fmt.Println("Login attempt:")
-fmt.Println("Email:", payload.Email)
-fmt.Println("Entered password:", payload.Password)
-fmt.Println("Stored hash:", user.Password)
-fmt.Println("Check result:", utils.CheckPasswordHash(payload.Password, user.Password))
-fmt.Println("Role:", user.Role)
+	fmt.Println("Email:", payload.Email)
+	fmt.Println("Entered password:", payload.Password)
+	fmt.Println("Stored hash:", user.Password)
+	fmt.Println("Check result:", utils.CheckPasswordHash(payload.Password, user.Password))
+	fmt.Println("Role:", user.Role)
 
 }
 
@@ -162,11 +162,10 @@ func ProfileHandler(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"id":             user.ID,
-		"name":           user.Name,
-		"email":          user.Email,
+		"id":     user.ID,
+		"name":   user.Name,
+		"email":  user.Email,
 		"joined": time.Time(user.CreatedAt).Format(time.RFC3339),
-
 
 		"membership":     user.Membership,
 		"role":           user.Role,
@@ -650,8 +649,7 @@ func SignupHandler(ctx *gin.Context) {
 		Password:  hashedPassword,
 		Country:   country,
 		CreatedAt: utils.FormattedTime(time.Now()),
-UpdatedAt: utils.FormattedTime(time.Now()),
-
+		UpdatedAt: utils.FormattedTime(time.Now()),
 	}
 
 	if err := database.DB.Create(&user).Error; err != nil {

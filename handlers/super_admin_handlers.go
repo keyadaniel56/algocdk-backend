@@ -84,8 +84,8 @@ func SuperAdminRegisterHandler(ctx *gin.Context) {
 		Email:     payload.Email,
 		Password:  hashedPassword,
 		Role:      "superadmin",
-		   CreatedAt: utils.FormattedTime(time.Now()),
-    UpdatedAt: utils.FormattedTime(time.Now()),
+		CreatedAt: utils.FormattedTime(time.Now()),
+		UpdatedAt: utils.FormattedTime(time.Now()),
 	}
 
 	if err := database.DB.Create(&superAdmin).Error; err != nil {
@@ -265,8 +265,8 @@ func CreateUser(ctx *gin.Context) {
 		Email:     payload.Email,
 		Password:  hashedPassword,
 		Role:      "User",
-		   CreatedAt: utils.FormattedTime(time.Now()),
-    UpdatedAt: utils.FormattedTime(time.Now()),
+		CreatedAt: utils.FormattedTime(time.Now()),
+		UpdatedAt: utils.FormattedTime(time.Now()),
 	}
 
 	if err := database.DB.Create(&user).Error; err != nil {
@@ -280,30 +280,6 @@ func CreateUser(ctx *gin.Context) {
 		"email":   user.Email,
 	})
 }
-
-// // 🧩 Create user
-// func CreateUser(ctx *gin.Context) {
-// 	var newUser models.Person
-
-// 	if err := ctx.ShouldBindJSON(&newUser); err != nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-// 		return
-// 	}
-
-// 	// Ensure email is unique
-// 	var existing models.Person
-// 	if err := database.DB.Where("email = ?", newUser.Email).First(&existing).Error; err == nil {
-// 		ctx.JSON(http.StatusBadRequest, gin.H{"error": "User already exists"})
-// 		return
-// 	}
-
-// 	if err := database.DB.Create(&newUser).Error; err != nil {
-// 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
-// 		return
-// 	}
-
-// 	ctx.JSON(http.StatusCreated, gin.H{"message": "User created successfully", "user": newUser})
-// }
 
 // ✏️ Update user
 func UpdateUser(ctx *gin.Context) {
@@ -653,14 +629,13 @@ func CreateAdmin(ctx *gin.Context) {
 
 	// 👤 Create Person
 	person := models.Person{
-	Name:      payload.Name,
-	Email:     payload.Email,
-	Password:  hashedPassword,
-	Role:      "Admin",
-	CreatedAt: utils.FormattedTime(time.Now()),
-	UpdatedAt: utils.FormattedTime(time.Now()),
-}
-
+		Name:      payload.Name,
+		Email:     payload.Email,
+		Password:  hashedPassword,
+		Role:      "Admin",
+		CreatedAt: utils.FormattedTime(time.Now()),
+		UpdatedAt: utils.FormattedTime(time.Now()),
+	}
 
 	if err := database.DB.Create(&person).Error; err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "failed to create person", "details": err.Error()})
@@ -678,14 +653,13 @@ func CreateAdmin(ctx *gin.Context) {
 
 	// ✅ Response
 	ctx.JSON(http.StatusCreated, gin.H{
-		"message":  "admin created successfully",
-		"person_id": person.ID,
-		"admin_id":  admin.ID,
-		"email":     person.Email,
-		"role":      person.Role,
+		"message":    "admin created successfully",
+		"person_id":  person.ID,
+		"admin_id":   admin.ID,
+		"email":      person.Email,
+		"role":       person.Role,
 		"created_at": person.CreatedAt,
-"updated_at": person.UpdatedAt,
-
+		"updated_at": person.UpdatedAt,
 	})
 }
 
@@ -832,8 +806,8 @@ func ScanAllBotsHandler(c *gin.Context) {
 						"owner":    bot.OwnerID,
 						"file":     path,
 						"app_id":   m[2],
-						"name":bot.Name,
-						"filename":bot.HTMLFile,
+						"name":     bot.Name,
+						"filename": bot.HTMLFile,
 					})
 				}
 			}
@@ -858,4 +832,145 @@ func ScanAllBotsHandler(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "All bots are valid"})
+}
+
+// GetAllTransactions retrieves all transactions for superadmin
+func GetAllTransactions(ctx *gin.Context) {
+	userID, exists := ctx.Get("user_id")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	userIDUint, ok := userID.(uint)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user id"})
+		return
+	}
+
+	// Verify superadmin role
+	var user models.Person
+	if err := database.DB.First(&user, userIDUint).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	if user.Role != "superadmin" {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
+	var transactions []models.Transaction
+	if err := database.DB.Order("created_at DESC").Find(&transactions).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Error fetching all transactions",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	totalSales := 0.0
+	totalCompanyShare := 0.0
+	totalAdminShare := 0.0
+	byAdmin := make(map[uint][]models.Transaction)
+	for _, tx := range transactions {
+		if tx.PaymentType == "purchase" || tx.PaymentType == "rent" {
+			totalSales += tx.Amount
+			totalCompanyShare += tx.CompanyShare
+			totalAdminShare += tx.AdminShare
+		}
+		byAdmin[tx.AdminID] = append(byAdmin[tx.AdminID], tx)
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"transactions":        transactions,
+		"total_sales":         totalSales,
+		"total_company_share": totalCompanyShare,
+		"total_admin_share":   totalAdminShare,
+		"total_transactions":  len(transactions),
+		"by_admin":            byAdmin,
+	})
+}
+
+// RecordTransaction creates a new transaction
+func RecordTransaction(ctx *gin.Context) {
+	userID, exists := ctx.Get("user_id")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	userIDUint, ok := userID.(uint)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user id"})
+		return
+	}
+
+	// Verify admin role
+	var user models.Person
+	if err := database.DB.First(&user, userIDUint).Error; err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "user not found"})
+		return
+	}
+
+	if user.Role != "ADMIN" && user.Role != "superadmin" {
+		ctx.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
+		return
+	}
+
+	var input struct {
+		UserID         uint    `json:"user_id" binding:"required"`
+		BotID          uint    `json:"bot_id" binding:"required"`
+		Amount         float64 `json:"amount" binding:"required,gt=0"`
+		CompanyShare   float64 `json:"company_share" binding:"gte=0"`
+		AdminShare     float64 `json:"admin_share" binding:"gte=0"`
+		Reference      string  `json:"reference" binding:"required"`
+		Status         string  `json:"status" binding:"required,oneof=pending success failed"`
+		PaymentChannel string  `json:"payment_channel" binding:"required"`
+		PaymentType    string  `json:"payment_type" binding:"required,oneof=purchase rent"`
+		Description    string  `json:"description"`
+	}
+
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid input",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	// Additional validation using govalidator
+	if !govalidator.IsIn(input.Status, "pending", "success", "failed") ||
+		!govalidator.IsIn(input.PaymentType, "purchase", "rent") {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error": "Invalid status or payment type",
+		})
+		return
+	}
+
+	transaction := models.Transaction{
+		UserID:         input.UserID,
+		AdminID:        userIDUint,
+		BotID:          input.BotID,
+		Amount:         input.Amount,
+		CompanyShare:   input.CompanyShare,
+		AdminShare:     input.AdminShare,
+		Reference:      input.Reference,
+		Status:         input.Status,
+		PaymentChannel: input.PaymentChannel,
+		PaymentType:    input.PaymentType,
+		Description:    input.Description,
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+	}
+
+	if err := database.DB.Create(&transaction).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Error recording transaction",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, transaction)
 }

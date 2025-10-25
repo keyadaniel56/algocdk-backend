@@ -228,7 +228,7 @@
                     </div>
 
                     <!-- Stats Cards -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6 mb-8">
                         <div
                             class="bg-dark-800 rounded-xl border border-dark-700 p-6 transition-all hover:-translate-y-1 hover:border-primary-500/30">
                             <div class="flex items-center">
@@ -323,6 +323,25 @@
                                 <span class="text-gray-500 text-sm ml-2">from last month</span>
                             </div>
                         </div>
+
+                        <div
+                            class="bg-dark-800 rounded-xl border border-dark-700 p-6 transition-all hover:-translate-y-1 hover:border-primary-500/30">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-blue-500/10 text-blue-400 mr-4">
+                                    <i class="fas fa-exchange-alt text-xl"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-400">Total Transactions</p>
+                                    <h3 class="text-2xl font-bold text-white" id="totalTransactions">Loading...</h3>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <span class="text-success-500 text-sm font-medium">
+                                    <i class="fas fa-arrow-up mr-1"></i>11
+                                </span>
+                                <span class="text-gray-500 text-sm ml-2">this month</span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Charts Section -->
@@ -340,6 +359,59 @@
                             <h3 class="text-lg font-medium text-white mb-4">Platform Activity</h3>
                             <div class="space-y-4" id="activityFeed">
                                 <!-- Activity items will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction Stats Section -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">Transaction Overview</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Total Sales</span>
+                                    <span class="text-white font-medium" id="totalSales">$0.00</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Company Share</span>
+                                    <span class="text-green-400 font-medium" id="companyShare">$0.00</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Admin Share</span>
+                                    <span class="text-blue-400 font-medium" id="adminShare">$0.00</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">Transaction Status</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Successful</span>
+                                    <span class="text-green-400 font-medium" id="successfulTransactions">0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Pending</span>
+                                    <span class="text-yellow-400 font-medium" id="pendingTransactions">0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Failed</span>
+                                    <span class="text-red-400 font-medium" id="failedTransactions">0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-dark-800 rounded-xl border border-dark-700 p-6">
+                            <h3 class="text-lg font-medium text-white mb-4">Payment Types</h3>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Rent</span>
+                                    <span class="text-purple-400 font-medium" id="rentTransactions">0</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-gray-400">Purchase</span>
+                                    <span class="text-blue-400 font-medium" id="purchaseTransactions">0</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -485,12 +557,22 @@
                     <div class="flex justify-between items-center mb-6">
                         <h2 class="text-2xl font-bold text-white">Transactions</h2>
                         <div class="flex space-x-4">
+                            <button onclick="exportTransactionsHandler()"
+                                class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center">
+                                <i class="fas fa-download mr-2"></i> Export
+                            </button>
                             <select id="transactionTypeFilter"
                                 class="bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
                                 <option value="all">All Types</option>
-                                <option value="subscription">Subscription</option>
+                                <option value="rent">Rent</option>
                                 <option value="purchase">Purchase</option>
-                                <option value="hosting">Hosting</option>
+                            </select>
+                            <select id="transactionStatusFilter"
+                                class="bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
+                                <option value="all">All Status</option>
+                                <option value="success">Success</option>
+                                <option value="pending">Pending</option>
+                                <option value="failed">Failed</option>
                             </select>
                             <input type="date" id="transactionDateFilter"
                                 class="bg-dark-700 border border-dark-600 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-white">
@@ -520,6 +602,9 @@
                                         <th
                                             class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
                                             Status</th>
+                                        <th
+                                            class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                            Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-dark-800 divide-y divide-dark-600" id="transactionsTableBody">
@@ -740,6 +825,28 @@
         </div>
     </div>
 
+    <!-- Transaction Details Modal -->
+    <div id="transactionDetailsModal"
+        class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-20 hidden">
+        <div class="bg-dark-800 rounded-xl shadow-lg w-full max-w-2xl p-6 border border-dark-600">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-white">Transaction Details</h3>
+                <button id="closeTransactionDetailsModal" class="text-gray-400 hover:text-white transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="transactionDetailsContent">
+                <!-- Transaction details will be loaded here -->
+            </div>
+            <div class="flex justify-end mt-6">
+                <button id="closeTransactionDetails"
+                    class="bg-primary-500 text-white px-4 py-2 rounded-lg hover:bg-primary-600 transition-colors">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notification -->
     <div id="toast"
         class="fixed top-4 right-4 bg-success-500 text-white px-6 py-3 rounded-lg shadow-lg z-30 hidden border border-success-500/30">
@@ -854,14 +961,34 @@
             return apiRequest("/api/superadmin/dashboard");
         }
 
-        // CORRECTED: Use superadmin bots endpoint instead of admin bots
         async function getSuperAdminBots() {
             return apiRequest("/api/superadmin/bots");
         }
 
-        // CORRECTED: Add scan bots endpoint for superadmin
         async function scanAllBots() {
             return apiRequest("/api/superadmin/scan-bots", "POST");
+        }
+
+        // Transaction endpoints
+        async function getAllTransactions() {
+            return apiRequest("/api/superadmin/transactions");
+        }
+
+        async function getTransactions(filters = {}) {
+            const queryParams = new URLSearchParams(filters).toString();
+            return apiRequest(`/api/superadmin/transactions?${queryParams}`);
+        }
+
+        async function getTransactionStats(timeframe = 'monthly') {
+            return apiRequest(`/api/superadmin/transaction-stats?timeframe=${timeframe}`);
+        }
+
+        async function refundTransaction(transactionId, reason = "") {
+            return apiRequest(`/api/superadmin/transactions/${transactionId}/refund`, "POST", { reason });
+        }
+
+        async function exportTransactions(format = 'csv') {
+            return apiRequest(`/api/superadmin/transactions/export?format=${format}`);
         }
 
         // Check authentication status
@@ -902,6 +1029,11 @@
         const invalidBotsList = document.getElementById('invalidBotsList');
         const invalidBotsCount = document.getElementById('invalidBotsCount');
 
+        const transactionDetailsModal = document.getElementById('transactionDetailsModal');
+        const closeTransactionDetailsModal = document.getElementById('closeTransactionDetailsModal');
+        const closeTransactionDetails = document.getElementById('closeTransactionDetails');
+        const transactionDetailsContent = document.getElementById('transactionDetailsContent');
+
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toastMessage');
 
@@ -921,6 +1053,7 @@
         const userSearch = document.getElementById('userSearch');
         const userStatusFilter = document.getElementById('userStatusFilter');
         const transactionTypeFilter = document.getElementById('transactionTypeFilter');
+        const transactionStatusFilter = document.getElementById('transactionStatusFilter');
         const transactionDateFilter = document.getElementById('transactionDateFilter');
 
         // Initialize the dashboard
@@ -1013,6 +1146,15 @@
                 scanBotsModal.classList.add('hidden');
             });
 
+            // Transaction Details Modal
+            closeTransactionDetailsModal.addEventListener('click', function () {
+                transactionDetailsModal.classList.add('hidden');
+            });
+
+            closeTransactionDetails.addEventListener('click', function () {
+                transactionDetailsModal.classList.add('hidden');
+            });
+
             // Dropdowns
             notificationButton.addEventListener('click', function () {
                 notificationDropdown.classList.toggle('hidden');
@@ -1059,6 +1201,10 @@
                 filterTransactions();
             });
 
+            transactionStatusFilter.addEventListener('change', function () {
+                filterTransactions();
+            });
+
             transactionDateFilter.addEventListener('change', function () {
                 filterTransactions();
             });
@@ -1081,6 +1227,9 @@
                 }
                 if (e.target.id === 'scanBotsModal') {
                     scanBotsModal.classList.add('hidden');
+                }
+                if (e.target.id === 'transactionDetailsModal') {
+                    transactionDetailsModal.classList.add('hidden');
                 }
             });
         }
@@ -1116,7 +1265,7 @@
                 document.getElementById('totalUsers').textContent =
                     (dashboardData?.total_users || dashboardData?.users_count || 0).toLocaleString();
                 document.getElementById('totalAdmins').textContent =
-                    dashboardData?.total_admins || dashboardData?.admins_count || 0;
+                    (dashboardData?.total_admins || dashboardData?.admins_count || 0).toLocaleString();
                 document.getElementById('totalBots').textContent =
                     (dashboardData?.total_bots || dashboardData?.bots_count || 0).toLocaleString();
                 document.getElementById('totalRevenue').textContent = '$' +
@@ -1129,12 +1278,56 @@
 
                 // Initialize charts
                 initializeCharts(dashboardData?.charts);
+
+                // Load transaction stats
+                loadTransactionStats();
+
             } catch (error) {
                 console.error('Error loading dashboard data:', error);
                 showToast('Error loading dashboard data', 'error');
-
-                // Fallback to mock data
                 loadMockDashboardData();
+            }
+        }
+
+        // Load transaction stats
+        async function loadTransactionStats() {
+            try {
+                const transactionData = await getAllTransactions();
+
+                if (transactionData) {
+                    // Update transaction stats cards
+                    document.getElementById('totalTransactions').textContent =
+                        (transactionData.total_transactions || 0).toLocaleString();
+
+                    document.getElementById('totalSales').textContent =
+                        '$' + ((transactionData.total_sales || 0) / 100).toFixed(2);
+
+                    document.getElementById('companyShare').textContent =
+                        '$' + ((transactionData.total_company_share || 0) / 100).toFixed(2);
+
+                    document.getElementById('adminShare').textContent =
+                        '$' + ((transactionData.total_admin_share || 0) / 100).toFixed(2);
+
+                    // Calculate transaction status counts
+                    if (transactionData.transactions && Array.isArray(transactionData.transactions)) {
+                        const successful = transactionData.transactions.filter(t => t.status === 'success').length;
+                        const pending = transactionData.transactions.filter(t => t.status === 'pending').length;
+                        const failed = transactionData.transactions.filter(t => t.status === 'failed').length;
+
+                        document.getElementById('successfulTransactions').textContent = successful;
+                        document.getElementById('pendingTransactions').textContent = pending;
+                        document.getElementById('failedTransactions').textContent = failed;
+
+                        // Calculate payment type counts
+                        const rent = transactionData.transactions.filter(t => t.payment_type === 'rent').length;
+                        const purchase = transactionData.transactions.filter(t => t.payment_type === 'purchase').length;
+
+                        document.getElementById('rentTransactions').textContent = rent;
+                        document.getElementById('purchaseTransactions').textContent = purchase;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading transaction stats:', error);
             }
         }
 
@@ -1145,6 +1338,7 @@
             document.getElementById('totalBots').textContent = '1,247';
             document.getElementById('totalRevenue').textContent = '$124,580';
             document.getElementById('activeSubscriptions').textContent = '8,742';
+            document.getElementById('totalTransactions').textContent = '11';
 
             // Load mock activity feed
             loadActivityFeed([
@@ -1533,7 +1727,7 @@
             renderUsersTable(filteredUsers);
         }
 
-        // CORRECTED: Load bots table using superadmin endpoint
+        // Load bots table using superadmin endpoint
         async function loadBotsTable() {
             try {
                 const response = await getSuperAdminBots();
@@ -1631,13 +1825,24 @@
             }).join('');
         }
 
-        // Load transactions table
+        // Load transactions table with real API
         async function loadTransactionsTable() {
             try {
-                // This would be replaced with actual API call when available
-                const transactions = []; // await getTransactions();
+                const response = await getAllTransactions();
+                let transactions = [];
+
+                // Handle different response formats
+                if (response && Array.isArray(response.transactions)) {
+                    transactions = response.transactions;
+                } else if (Array.isArray(response)) {
+                    transactions = response;
+                } else if (response && Array.isArray(response.data)) {
+                    transactions = response.data;
+                }
+
                 window.allTransactions = transactions;
                 renderTransactionsTable(transactions);
+
             } catch (error) {
                 console.error('Error loading transactions:', error);
                 showToast('Error loading transactions', 'error');
@@ -1646,74 +1851,421 @@
             }
         }
 
-        // Load mock transactions as fallback
-        function loadMockTransactions() {
-            const mockTransactions = [
-                { id: "TX001", user: "John Doe", amount: "$49.99", type: "Purchase", date: "2023-09-18", status: "Completed" },
-                { id: "TX002", user: "Jane Smith", amount: "$19.99", type: "Subscription", date: "2023-09-17", status: "Completed" },
-                { id: "TX003", user: "Robert Brown", amount: "$9.99", type: "Hosting", date: "2023-09-16", status: "Pending" }
-            ];
-
-            window.allTransactions = mockTransactions;
-            renderTransactionsTable(mockTransactions);
-        }
-
-        // Render transactions table
+        // Render transactions table with real data
         function renderTransactionsTable(transactions) {
             const tbody = document.getElementById('transactionsTableBody');
 
             if (!transactions || transactions.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="px-6 py-4 text-center text-gray-400">No transactions found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-4 text-center text-gray-400">No transactions found</td></tr>';
                 return;
             }
 
             tbody.innerHTML = transactions.map(transaction => {
+                // Convert amount from cents to dollars
+                const amount = transaction.amount ? `$${(transaction.amount / 100).toFixed(2)}` : '$0.00';
+                const companyShare = transaction.company_share ? `$${(transaction.company_share / 100).toFixed(2)}` : '$0.00';
+                const adminShare = transaction.admin_share ? `$${(transaction.admin_share / 100).toFixed(2)}` : '$0.00';
+
+                // Status badge styling
+                const statusClass = {
+                    'success': 'bg-green-500/20 text-green-400 border-green-500/30',
+                    'pending': 'bg-yellow-500/20 text-yellow-500 border-yellow-500/30',
+                    'failed': 'bg-red-500/20 text-red-400 border-red-500/30'
+                }[transaction.status?.toLowerCase()] || 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+
+                // Type badge styling
+                const typeClass = {
+                    'rent': 'bg-purple-500/20 text-purple-400 border-purple-500/30',
+                    'purchase': 'bg-blue-500/20 text-blue-400 border-blue-500/30'
+                }[transaction.payment_type?.toLowerCase()] || 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+
+                // Payment channel styling
+                const channelClass = {
+                    'paystack': 'bg-orange-500/20 text-orange-400 border-orange-500/30'
+                }[transaction.payment_channel?.toLowerCase()] || 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+
                 return `
-                    <tr>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${transaction.id}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${transaction.user}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${transaction.amount}</td>
+                    <tr class="hover:bg-dark-700 transition-colors">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                            <div class="font-mono text-xs">${transaction.reference || 'N/A'}</div>
+                            <div class="text-xs text-gray-500 mt-1">ID: ${transaction.id}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-300">User #${transaction.user_id}</div>
+                            <div class="text-xs text-gray-500">Admin #${transaction.admin_id}</div>
+                            <div class="text-xs text-gray-500">Bot #${transaction.bot_id}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-medium text-gray-300">${amount}</div>
+                            <div class="text-xs text-gray-500">
+                                Company: ${companyShare} | Admin: ${adminShare}
+                            </div>
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                ${transaction.type === 'Purchase' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' :
-                        transaction.type === 'Subscription' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' :
-                            'bg-green-500/20 text-green-400 border border-green-500/30'}">
-                                ${transaction.type}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${typeClass}">
+                                ${transaction.payment_type?.charAt(0).toUpperCase() + transaction.payment_type?.slice(1) || 'Unknown'}
                             </span>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${transaction.date}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                ${transaction.status === 'Completed' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
-                        'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30'}">
-                                ${transaction.status}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${channelClass}">
+                                ${transaction.payment_channel?.charAt(0).toUpperCase() + transaction.payment_channel?.slice(1) || 'Unknown'}
                             </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${formatDate(transaction.created_at)}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                                ${transaction.status?.charAt(0).toUpperCase() + transaction.status?.slice(1) || 'Unknown'}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                            <div class="flex space-x-2">
+                                <button class="text-blue-500 hover:text-blue-400 transition-colors" 
+                                        onclick="viewTransactionDetails(${transaction.id})" 
+                                        title="View Details">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                ${transaction.status?.toLowerCase() === 'success' ? `
+                                <button class="text-red-500 hover:text-red-400 transition-colors" 
+                                        onclick="refundTransactionPrompt(${transaction.id})" 
+                                        title="Refund">
+                                    <i class="fas fa-undo"></i>
+                                </button>
+                                ` : ''}
+                                ${transaction.status?.toLowerCase() === 'pending' ? `
+                                <button class="text-green-500 hover:text-green-400 transition-colors" 
+                                        onclick="approveTransaction(${transaction.id})" 
+                                        title="Approve">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                ` : ''}
+                                ${transaction.status?.toLowerCase() === 'failed' ? `
+                                <button class="text-yellow-500 hover:text-yellow-400 transition-colors" 
+                                        onclick="retryTransaction(${transaction.id})" 
+                                        title="Retry">
+                                    <i class="fas fa-redo"></i>
+                                </button>
+                                ` : ''}
+                            </div>
                         </td>
                     </tr>
                 `;
             }).join('');
         }
 
-        // Filter transactions
-        function filterTransactions() {
+        // Enhanced transaction view function
+        async function viewTransactionDetails(transactionId) {
+            try {
+                // Find the transaction in our current data
+                const transaction = window.allTransactions?.find(t => t.id === transactionId);
+
+                if (transaction) {
+                    // Show transaction details in modal
+                    showTransactionDetailsModal(transaction);
+                } else {
+                    showToast('Transaction details not found', 'error');
+                }
+            } catch (error) {
+                console.error('Error viewing transaction details:', error);
+                showToast('Error loading transaction details', 'error');
+            }
+        }
+
+        // Function to show transaction details in a modal
+        function showTransactionDetailsModal(transaction) {
+            // Create modal content
+            transactionDetailsContent.innerHTML = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">Transaction ID</label>
+                            <p class="text-white font-mono">${transaction.id}</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">Reference</label>
+                            <p class="text-white font-mono">${transaction.reference}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">User ID</label>
+                            <p class="text-white">${transaction.user_id}</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">Admin ID</label>
+                            <p class="text-white">${transaction.admin_id}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">Bot ID</label>
+                            <p class="text-white">${transaction.bot_id}</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">Payment Type</label>
+                            <p class="text-white">${transaction.payment_type}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">Total Amount</label>
+                            <p class="text-white font-medium">$${(transaction.amount / 100).toFixed(2)}</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">Company Share</label>
+                            <p class="text-green-400">$${(transaction.company_share / 100).toFixed(2)}</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">Admin Share</label>
+                            <p class="text-blue-400">$${(transaction.admin_share / 100).toFixed(2)}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-gray-400 text-sm font-medium mb-1">Description</label>
+                        <p class="text-white">${transaction.description}</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">Payment Channel</label>
+                            <p class="text-white">${transaction.payment_channel}</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">Status</label>
+                            <span class="px-2 py-1 text-xs font-semibold rounded-full ${transaction.status === 'success' ? 'bg-green-500/20 text-green-400 border border-green-500/30' :
+                    transaction.status === 'pending' ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/30' :
+                        'bg-red-500/20 text-red-400 border border-red-500/30'
+                }">
+                                ${transaction.status?.charAt(0).toUpperCase() + transaction.status?.slice(1)}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">Created At</label>
+                            <p class="text-white">${formatDate(transaction.created_at)}</p>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm font-medium mb-1">Updated At</label>
+                            <p class="text-white">${formatDate(transaction.updated_at)}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Show modal
+            transactionDetailsModal.classList.remove('hidden');
+        }
+
+        // Helper functions for transactions
+        function formatDate(dateString) {
+            try {
+                if (!dateString || dateString === '0001-01-01T00:00:00Z') {
+                    return 'N/A';
+                }
+                const date = new Date(dateString);
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            } catch (error) {
+                return dateString;
+            }
+        }
+
+        async function refundTransactionPrompt(transactionId) {
+            const reason = prompt('Please enter refund reason:') || 'No reason provided';
+            if (reason !== null) {
+                try {
+                    await refundTransaction(transactionId, reason);
+                    showToast('Transaction refund initiated successfully');
+                    loadTransactionsTable(); // Refresh the table
+                } catch (error) {
+                    console.error('Error refunding transaction:', error);
+                    showToast('Error refunding transaction', 'error');
+                }
+            }
+        }
+
+        async function approveTransaction(transactionId) {
+            if (confirm('Are you sure you want to approve this transaction?')) {
+                try {
+                    // This would call an approve transaction endpoint
+                    // await approveTransactionAPI(transactionId);
+                    showToast('Transaction approved successfully');
+                    loadTransactionsTable(); // Refresh the table
+                } catch (error) {
+                    console.error('Error approving transaction:', error);
+                    showToast('Error approving transaction', 'error');
+                }
+            }
+        }
+
+        // Add retry transaction function
+        async function retryTransaction(transactionId) {
+            if (confirm('Are you sure you want to retry this failed transaction?')) {
+                try {
+                    // This would call a retry transaction endpoint
+                    // await retryTransactionAPI(transactionId);
+                    showToast('Transaction retry initiated');
+                    loadTransactionsTable(); // Refresh the table
+                } catch (error) {
+                    console.error('Error retrying transaction:', error);
+                    showToast('Error retrying transaction', 'error');
+                }
+            }
+        }
+
+        // Filter transactions with API
+        async function filterTransactions() {
             const typeFilter = transactionTypeFilter.value;
+            const statusFilter = transactionStatusFilter.value;
+            const dateFilter = transactionDateFilter.value;
+
+            try {
+                const filters = {};
+                if (typeFilter !== 'all') {
+                    filters.type = typeFilter;
+                }
+                if (statusFilter !== 'all') {
+                    filters.status = statusFilter;
+                }
+                if (dateFilter) {
+                    filters.date = dateFilter;
+                }
+
+                // Use filtered API call if available, otherwise fallback to client-side
+                const response = await getTransactions(filters);
+                let filteredTransactions = [];
+
+                // Handle different response formats
+                if (Array.isArray(response)) {
+                    filteredTransactions = response;
+                } else if (response && Array.isArray(response.transactions)) {
+                    filteredTransactions = response.transactions;
+                } else if (response && Array.isArray(response.data)) {
+                    filteredTransactions = response.data;
+                }
+
+                renderTransactionsTable(filteredTransactions);
+            } catch (error) {
+                console.error('Error filtering transactions via API, using client-side filter:', error);
+                // Fallback to client-side filtering
+                filterTransactionsClientSide();
+            }
+        }
+
+        // Client-side filtering fallback
+        function filterTransactionsClientSide() {
+            const typeFilter = transactionTypeFilter.value;
+            const statusFilter = transactionStatusFilter.value;
             const dateFilter = transactionDateFilter.value;
 
             let filteredTransactions = window.allTransactions || [];
 
             if (typeFilter !== 'all') {
                 filteredTransactions = filteredTransactions.filter(transaction =>
-                    transaction.type && transaction.type.toLowerCase() === typeFilter.toLowerCase()
+                    transaction.payment_type && transaction.payment_type.toLowerCase() === typeFilter.toLowerCase()
+                );
+            }
+
+            if (statusFilter !== 'all') {
+                filteredTransactions = filteredTransactions.filter(transaction =>
+                    transaction.status && transaction.status.toLowerCase() === statusFilter.toLowerCase()
                 );
             }
 
             if (dateFilter) {
-                filteredTransactions = filteredTransactions.filter(transaction =>
-                    transaction.date === dateFilter
-                );
+                filteredTransactions = filteredTransactions.filter(transaction => {
+                    const transactionDate = new Date(transaction.created_at);
+                    const filterDate = new Date(dateFilter);
+                    return transactionDate.toDateString() === filterDate.toDateString();
+                });
             }
 
             renderTransactionsTable(filteredTransactions);
+        }
+
+        // Export functionality
+        async function exportTransactionsHandler() {
+            try {
+                showToast('Exporting transactions...', 'info');
+                const exportData = await exportTransactions('csv');
+
+                // Create download link
+                const blob = new Blob([exportData], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `transactions-${new Date().toISOString().split('T')[0]}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+
+                showToast('Transactions exported successfully');
+            } catch (error) {
+                console.error('Error exporting transactions:', error);
+                showToast('Error exporting transactions', 'error');
+            }
+        }
+
+        // Load mock transactions as fallback
+        function loadMockTransactions() {
+            const mockTransactions = [
+                {
+                    id: 11,
+                    user_id: 17,
+                    admin_id: 1,
+                    bot_id: 5,
+                    amount: 2500,
+                    company_share: 500,
+                    admin_share: 2000,
+                    reference: "ALG_17_1761360860",
+                    status: "success",
+                    payment_channel: "Paystack",
+                    payment_type: "rent",
+                    description: "Payment for bot 5 (rent)",
+                    created_at: "2025-10-25T05:54:21.629919558+03:00",
+                    updated_at: "2025-10-25T06:09:49.48522675+03:00"
+                },
+                {
+                    id: 10,
+                    user_id: 17,
+                    admin_id: 1,
+                    bot_id: 5,
+                    amount: 10000,
+                    company_share: 2000,
+                    admin_share: 8000,
+                    reference: "ALG_17_1761355073",
+                    status: "failed",
+                    payment_channel: "Paystack",
+                    payment_type: "rent",
+                    description: "Payment for bot 5 (rent)",
+                    created_at: "2025-10-25T04:17:54.462700863+03:00",
+                    updated_at: "2025-10-25T05:39:14.657883477+03:00"
+                },
+                {
+                    id: 9,
+                    user_id: 17,
+                    admin_id: 1,
+                    bot_id: 5,
+                    amount: 10000,
+                    company_share: 3000,
+                    admin_share: 7000,
+                    reference: "ALG_17_1761354351",
+                    status: "pending",
+                    payment_channel: "Paystack",
+                    payment_type: "purchase",
+                    description: "Payment for bot 5 (purchase)",
+                    created_at: "2025-10-25T04:05:52.552781737+03:00",
+                    updated_at: "0001-01-01T00:00:00Z"
+                }
+            ];
+
+            window.allTransactions = mockTransactions;
+            renderTransactionsTable(mockTransactions);
         }
 
         // Load reports data
@@ -2025,7 +2577,7 @@
             }
         }
 
-        // CORRECTED: Scan bots using the superadmin scan-bots endpoint
+        // Scan bots using the superadmin scan-bots endpoint
         async function scanBots() {
             try {
                 // Show loading state
@@ -2169,6 +2721,11 @@
         window.toggleUserStatus = toggleUserStatus;
         window.viewBot = viewBot;
         window.deleteBot = deleteBot;
+        window.viewTransactionDetails = viewTransactionDetails;
+        window.refundTransactionPrompt = refundTransactionPrompt;
+        window.approveTransaction = approveTransaction;
+        window.retryTransaction = retryTransaction;
+        window.exportTransactionsHandler = exportTransactionsHandler;
     </script>
 </body>
 

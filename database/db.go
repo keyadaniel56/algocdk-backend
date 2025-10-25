@@ -32,6 +32,9 @@ func InitDB() {
 		&models.BotUser{},
 		&models.Admin{},
 		&models.Transaction{},
+		&models.SalesHistory{},
+		&models.UserBot{},
+		&models.Sale{},
 	)
 
 	// Ensure uploads directory exists

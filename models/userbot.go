@@ -14,4 +14,6 @@ type UserBot struct {
 	PurchaseDate  time.Time  `json:"purchase_date"`
 	CreatedAt     time.Time  `json:"created_at"`
 	UpdatedAt     time.Time  `json:"updated_at"`
+	Type          string     `json:"type"`
+	ResaleAllowed bool
 }

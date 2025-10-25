@@ -77,6 +77,17 @@ export async function deleteBot(botId) {
 }
 
 /* =====================
+   ADMIN TRANSACTIONS
+===================== */
+export async function getAdminTransactions() {
+  return apiRequest("/api/admin/transactions");
+}
+
+export async function recordTransaction(transactionData) {
+  return apiRequest("/api/admin/transactions", "POST", transactionData);
+}
+
+/* =====================
    SUPERADMIN ACTIONS
 ===================== */
 export async function superAdminLogin(credentials) {
@@ -139,14 +150,16 @@ export async function deleteAdmin(adminId) {
   return apiRequest(`/api/superadmin/delete-admin/${adminId}`, "DELETE");
 }
 
-
-// =====================
-// SUPERADMIN BOTS
-// =====================
+/* =====================
+   SUPERADMIN BOTS
+===================== */
 export async function scanAllBots() {
   return apiRequest("/api/superadmin/scan-bots", "POST"); // or "GET", both will work now
 }
 
+export async function getAllTransactions() {
+  return apiRequest("/api/superadmin/transactions", "GET");
+}
 
 /* =====================
    PAYSTACK INTEGRATION

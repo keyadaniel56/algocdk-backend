@@ -156,110 +156,6 @@ func GetAdminBotsHandler(ctx *gin.Context) {
 	})
 }
 
-// func CreateBotHandler(c *gin.Context) {
-// 	// Get user_id from context
-// 	userIDInterface, exists := c.Get("user_id")
-// 	if !exists {
-// 		c.JSON(http.StatusUnauthorized, gin.H{"message": "unauthorized"})
-// 		return
-// 	}
-// 	userID, ok := userIDInterface.(uint)
-// 	if !ok {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"message": "invalid user_id"})
-// 		return
-// 	}
-
-// 	// Parse form values
-// 	name := c.PostForm("name")
-// 	priceStr := c.PostForm("price")
-// 	strategy := c.PostForm("strategy")
-
-// 	if name == "" || priceStr == "" || strategy == "" {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "missing required fields (name, price, strategy)"})
-// 		return
-// 	}
-
-// 	price, err := strconv.ParseFloat(priceStr, 64)
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid price"})
-// 		return
-// 	}
-
-// 	now := time.Now()
-// 	baseFolder := fmt.Sprintf("uploads/user_%d/%d/%02d/%02d", userID, now.Year(), now.Month(), now.Day())
-
-// 	// Helper function to save uploaded file
-// 	saveFile := func(fileHeader *multipart.FileHeader, folder string) (string, error) {
-// 		if err := os.MkdirAll(folder, os.ModePerm); err != nil {
-// 			return "", err
-// 		}
-// 		newName := fmt.Sprintf("%d_%s", time.Now().UnixNano(), filepath.Base(fileHeader.Filename))
-// 		path := filepath.Join(folder, newName)
-// 		if err := c.SaveUploadedFile(fileHeader, path); err != nil {
-// 			return "", err
-// 		}
-// 		return path, nil
-// 	}
-
-// 	// Save HTML file
-// 	htmlFile, err := c.FormFile("html_file")
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "html_file required"})
-// 		return
-// 	}
-// 	htmlPath, err := saveFile(htmlFile, filepath.Join(baseFolder, "html"))
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save html file"})
-// 		return
-// 	}
-
-// 	// Save image file
-// 	imageFile, err := c.FormFile("image")
-// 	if err != nil {
-// 		c.JSON(http.StatusBadRequest, gin.H{"error": "image required"})
-// 		return
-// 	}
-// 	imagePath, err := saveFile(imageFile, filepath.Join(baseFolder, "images"))
-// 	if err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save image file"})
-// 		return
-// 	}
-
-// 	// Create bot record
-// 	bot := models.Bot{
-// 		Name:      name,
-// 		HTMLFile:  htmlPath,
-// 		Image:     imagePath,
-// 		Price:     price,
-// 		Strategy:  strategy,
-// 		OwnerID:   userID,
-// 		CreatedAt: now,
-// 		UpdatedAt: now,
-// 	}
-
-// 	if err := database.DB.Create(&bot).Error; err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to save bot"})
-// 		return
-// 	}
-
-// 	// Generate bot link for frontend
-// 	botLink := fmt.Sprintf("https://yourfrontend.com/bots/%d", bot.ID)
-
-// 	c.JSON(http.StatusCreated, gin.H{
-// 		"message":  "Bot created successfully",
-// 		"bot_id":   bot.ID,
-// 		"bot_link": botLink,
-// 	})
-// }
-
-// -------------------------
-// Create Bot (already working)
-// -------------------------
-// func CreateBotHandler(c *gin.Context) { ... }
-
-// -------------------------
-// Update Bot
-// -------------------------
 func UpdateBotHandler(c *gin.Context) {
 	userID := c.GetUint("user_id")
 
@@ -611,8 +507,6 @@ func CreateBotHandler(c *gin.Context) {
 	})
 }
 
-
-
 // GET /api/admin/profile
 func AdminProfileHandler(ctx *gin.Context) {
 	emailValue, exists := ctx.Get("email") // ✅ fixed key
@@ -664,5 +558,44 @@ func AdminProfileHandler(ctx *gin.Context) {
 			"subscription_expiry":    person.SubscriptionExpiry,
 			"upgrade_request_status": person.UpgradeRequestStatus,
 		},
+	})
+}
+
+func GetAdminTransactions(ctx *gin.Context) {
+	userID, exists := ctx.Get("user_id")
+	if !exists {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
+		return
+	}
+
+	userIDUint, ok := userID.(uint)
+	if !ok {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "invalid user id"})
+		return
+	}
+
+	var transactions []models.Transaction
+	if err := database.DB.Where("admin_id = ?", userIDUint).Order("created_at DESC").Find(&transactions).Error; err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error":   "Error fetching transactions",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	totalSales := 0.0
+	totalAdminShare := 0.0
+	for _, tx := range transactions {
+		if tx.PaymentType == "purchase" || tx.PaymentType == "rent" {
+			totalSales += tx.Amount
+			totalAdminShare += tx.AdminShare
+		}
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"transactions":       transactions,
+		"total_sales":        totalSales,
+		"total_admin_share":  totalAdminShare,
+		"total_transactions": len(transactions),
 	})
 }
