@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
 
 	"Api/database"
 	"Api/middleware"
@@ -41,31 +40,58 @@ func main() {
 	routes.SetUpRouter(r)
 
 	// Frontend path
-	frontendPath := "./Frontend" // Use relative to main.go or adjust as needed
+	frontendPath := "./Frontend"
 
-	// Serve assets (CSS, JS, images)
+	// Serve assets
 	r.Static("/assets", frontendPath)
 
-	// Serve all HTML files dynamically
-	htmlFiles, err := filepath.Glob(filepath.Join(frontendPath, "*.html"))
-	if err != nil {
-		log.Fatal("Failed to scan frontend HTML files:", err)
-	}
-	for _, file := range htmlFiles {
-		file := file // capture for closure
-		_, filename := filepath.Split(file)
-		route := "/" + filename[:len(filename)-len(".html")] // /auth for auth.html
-		if route == "/index" {
-			route = "/" // index.html should be root
-		}
-		r.GET(route, func(c *gin.Context) {
-			c.File(file)
-		})
-	}
+	// Serve HTML files manually
+	r.GET("/", func(c *gin.Context) {
+		c.File(frontendPath + "/index.html")
+	})
+	r.GET("/auth", func(c *gin.Context) {
+		c.File(frontendPath + "/auth.html")
+	})
+	r.GET("/app", func(c *gin.Context) {
+		c.File(frontendPath + "/app.html")
+	})
+	r.GET("/mybots", func(c *gin.Context) {
+		c.File(frontendPath + "/mybots.html")
+	})
+	r.GET("/botstore", func(c *gin.Context) {
+		c.File(frontendPath + "/botstore.html")
+	})
+	r.GET("/admin_dashboard", func(c *gin.Context) {
+		c.File(frontendPath + "/admin_dashboard.html")
+	})
+	r.GET("/superadmin_dashboard", func(c *gin.Context) {
+		c.File(frontendPath + "/superadmin_dashboard.html")
+	})
+	r.GET("/support", func(c *gin.Context) {
+		c.File(frontendPath + "/support.html")
+	})
+	r.GET("/privacy", func(c *gin.Context) {
+		c.File(frontendPath + "/privacy.html")
+	})
+	r.GET("/terms", func(c *gin.Context) {
+		c.File(frontendPath + "/terms.html")
+	})
+	r.GET("/legal", func(c *gin.Context) {
+		c.File(frontendPath + "/legal.html")
+	})
+	r.GET("/marketchart", func(c *gin.Context) {
+		c.File(frontendPath + "/marketchart.html")
+	})
+	r.GET("/test_upgrade", func(c *gin.Context) {
+		c.File(frontendPath + "/test_upgrade.html")
+	})
+	r.GET("/video", func(c *gin.Context) {
+		c.File(frontendPath + "/video.html")
+	})
 
-	// SPA fallback: serve index.html for all unmatched routes
+	// SPA fallback
 	r.NoRoute(func(c *gin.Context) {
-		c.File(filepath.Join(frontendPath, "index.html"))
+		c.File(frontendPath + "/index.html")
 	})
 
 	// Port config
