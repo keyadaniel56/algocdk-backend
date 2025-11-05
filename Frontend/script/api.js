@@ -1,6 +1,8 @@
 // api.js — AlgoCDK Frontend API Handler
 
-const API_BASE_URL = "http://localhost:8080"; // change to your deployed domain later
+// const API_BASE_URL = "http://localhost:8080"; // change to your deployed domain later
+
+const API_BASE_URL = "https://algocdk.onrender.com";
 
 // Helper: Make requests with auth header if token exists
 async function apiRequest(endpoint, method = "GET", data = null, isForm = false) {
