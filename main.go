@@ -55,6 +55,8 @@ func main() {
 		c.File(frontendPath + "/index.html")
 	})
 
+	
+	
 	// ✅ Port config
 	port := os.Getenv("PORT")
 	if port == "" {
