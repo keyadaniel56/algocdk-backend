@@ -15,7 +15,7 @@ import (
 
 func main() {
 
-	// ✅ Load env only locally
+	// Load .env locally only
 	if os.Getenv("ENV") != "production" {
 		if err := godotenv.Load(); err != nil {
 			log.Println("⚠️ No .env found, using system env vars")
@@ -24,11 +24,11 @@ func main() {
 
 	fmt.Println("SUPER_ADMIN_SECRET:", os.Getenv("SUPER_ADMIN_SECRET"))
 
-	// ✅ Connect DB + run expired bot task
+	// Initialize DB + deactivate expired bots
 	database.InitDB()
 	tasks.DeactivateExpiredBots()
 
-	// ✅ Gin config
+	// Gin config
 	if os.Getenv("GIN_MODE") == "release" {
 		gin.SetMode(gin.ReleaseMode)
 	}
@@ -36,13 +36,13 @@ func main() {
 	r.SetTrustedProxies(nil)
 	r.Use(middleware.CORSMiddleware())
 
-	// ✅ API routes — PASS ENGINE, NOT GROUP
+	// API routes
 	routes.SetUpRouter(r)
 
-	// ✅ Frontend path (for Tailwind static HTML project)
-	frontendPath := "../../Frontend"
+	// Frontend folder relative to main.go (repo root)
+	frontendPath := "Frontend"
 
-	// Serve assets folder
+	// Serve static assets (CSS, JS, images)
 	r.Static("/assets", frontendPath)
 
 	// Serve index.html at root
@@ -50,20 +50,18 @@ func main() {
 		c.File(frontendPath + "/index.html")
 	})
 
-	// Fallback — browser routing SPA
+	// Fallback for SPA routes
 	r.NoRoute(func(c *gin.Context) {
 		c.File(frontendPath + "/index.html")
 	})
 
-	
-	
-	// ✅ Port config
+	// Port configuration
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
 
-	fmt.Printf("🚀 Server running http://localhost:%s\n", port)
+	fmt.Printf("🚀 Server running on port %s\n", port)
 	if err := r.Run(":" + port); err != nil {
 		log.Fatal("❌ Failed to start server:", err)
 	}
